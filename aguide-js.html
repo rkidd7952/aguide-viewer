@@ -1,7 +1,22 @@
 <!DOCTYPE html>
 <html>
 <meta charset="iso-8859-1" />
-<title>aguide-js</title>
+<head>
+  <title>aguide-js</title>
+  <style>
+    .b {
+        font-weight: bold;
+    }
+
+    .i {
+        font-style: italic;
+    }
+
+    .u {
+        text-decoration-line: underline;
+    }
+  </style>
+</head>
 <body>
 
 <!-- <h2>aguide-js</h2> -->
@@ -226,67 +241,91 @@
       const cmd_handlers = [
       ];
    
-      html = aguide.text.slice(node.start, node.end)
-      html = html.replaceAll("<", "&lt;");
-      html = html.replaceAll(">", "&gt;");
-      return html;
+      var ps2 = parse_state_translate(ps,
+                                      [{from: "<", to: "&lt;"},
+                                       {from: ">", to: "&gt;"},
+                                       {from: "\n", to: "<br>"}]);
+      var render_state = {
+          style: []
+      };
 
-      while(!at_eof(ps)) {
-          console.info("pos: " + ps.pos);
+      while(!at_eof(ps2)) {
+          console.info("pos: " + ps2.pos);
 
-          var c = parse_state_search_token(ps, /[\@]/, true);
+          var c = parse_state_search_token(ps2, /[\\@]/, true);
           if(!c) {
-              html += parse_state_slice(ps, 0, -1, false);
+              html += parse_state_slice(ps2, ps2.pos, -1, false);
               break;
           }
 
-          html += parse_state_slice(ps, 0, c.start, false);
+          html += parse_state_slice(ps2, 0, c.start - ps2.pos, false);
 
           if(c.token === "\\") { /* escape */
               /* Skip backslash, emit next char */
-              html += parse_state_slice(ps, 1, 2, false);
+              html += parse_state_slice(ps2, 1, 2, false);
           } else if(c.token === "@") { /* start cmd */
-              var brace = parse_state_search_token(ps, /@{[^}*]}/, false);
+              var brace = parse_state_search_token(ps2, /@{[^}]*}/, false);
               if(brace) {
-                  console.log("handle @{" + brace.token.slice(2, -1) + "}")
+                  var cmd = brace.token.slice(2, -1);
+                  console.log("handle @{" + cmd + "}");
+                  html += render_brace_cmd(aguide, cmd, render_state);
               } else {
-                  var t = get_next_token(ps, false);
+                  var t = get_next_token(ps2, false);
                   console.log("handle cmd " + t.token);
+                  html += t.token;
               }
           }
-          
-
-          // var token = get_next_token(ps, true);
-          // if(!token) {
-          //     html += parse_state_slice(ps, 0, -1, false);
-          //     break;
-          // }
-
-          // var handler = get_handler(cmd_handlers, token.token.toLowerCase());
-          // if(handler) {
-          //     console.log("Do something with cmd " + token.token);
-          // } else if(token.token.indexOf("@{") === 0) {
-          //     /* handle @{...} */
-          //     var at_end = parse_state_search_token(ps, /}/, false);
-
-              
-          // }
-
-          // html += parse_state_slice(ps, 0, -1, false);
-          
-
-          // var next_at = parse_state_search_token(ps, /@{/, false);
-          // if(!next_at) {
-          //     html += parse_state_slice(ps, 0, -1, false);
-          //     break;
-          // }
-
-          // html += parse_state_slice(ps, 0, next_at.start, false);
-
-          // var at_end = parse_state_search_token(ps, /}/, false);
       }
 
       return html;
+  }
+
+  function render_brace_cmd(aguide, cmd, render_state)
+  {
+      var ps = new_parse_state(cmd);
+      var t = get_next_token(ps, false);
+      if(!t) {
+          return "";
+      }
+
+      var tlc = t.token.toLowerCase();
+      if(tlc === "b" || tlc === "i" || tlc === "u") {
+          var html = render_state.style.length > 0 ? "</span>" : "";
+          var cls = apply_style(render_state, tlc);
+          if(cls) {
+              html += "<span class=\"" + cls + "\">";
+          }
+          return html;
+      } else if(tlc === "ub" || tlc === "ui" || tlc === "uu") {
+          var html = render_state.style.length > 0 ? "</span>" : "";
+          var cls = remove_style(render_state, tlc);
+          if(cls) {
+              html += "<span class=\"" + cls + "\">";
+          }
+          return html;
+      }
+
+      return "@{" + cmd + "}";
+  }
+
+  function apply_style(render_state, cmd)
+  {
+      if(render_state.style.indexOf(cmd) === -1) {
+          render_state.style.push(cmd);
+          render_state.style.sort();
+      }
+
+      return render_state.style.join(" ");
+  }
+
+  function remove_style(render_state, cmd)
+  {
+      if(cmd[0] === "u") {
+          render_state.style = render_state.style.filter((x) => { x !== cmd[1] });
+          render_state.style.sort();
+      }
+
+      return render_state.style.join(" ");
   }
 
   function new_node_parse_state(aguide, node)
@@ -300,9 +339,14 @@
       return { text: text, pos: 0 }
   }
 
-  function dup_parse_state(ps)
+  // function parse_state_dup(ps)
+  // {
+  //     return { text: ps.text, pos: ps.pos }
+  // }
+
+  function parse_state_fork(ps)
   {
-      return { text: ps.text, pos: ps.pos }
+      return new_parse_state(ps.text.slice(ps.pos))
   }
 
   function at_eof(ps)
@@ -339,7 +383,13 @@
 
       var next = ps.text.slice(pos + quoted).search(next_re);
       if(next === -1) {
-          return null;
+          /* token is all text to end */
+          var token = ps.text.slice(pos);
+          var end = pos + token.length;
+          if(peek === false) {
+              parse_state_consume_to(ps, end);
+          }
+          return new_token(token, pos, end, begins_line);
       }
 
       next += quoted * 2;
@@ -361,7 +411,7 @@
       if(end !== -1) {
           var t = ps.text.slice(ps.pos + start, ps.pos + end);
           if(peek === false) {
-              parse_state_consume_to(ps.pos, end);
+              parse_state_consume_to(ps, ps.pos + end);
           }
           return t;
       }
@@ -401,6 +451,19 @@
   function parse_state_consume_to(ps, end)
   {
       ps.pos = end;
+  }
+
+  // trs: array of objects {from: x, to: y}
+  //      x: string or regex to replace
+  //      y: replacement
+  function parse_state_translate(ps, trs)
+  {
+      var ps2 = parse_state_fork(ps);
+      trs.forEach((tr) => {
+          ps2.text = ps2.text.replaceAll(tr.from, tr.to);
+      });
+
+      return ps2;
   }
 
   main();
