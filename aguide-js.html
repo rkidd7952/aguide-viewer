@@ -364,7 +364,7 @@
               html += "<span class=\"" + cls + "\">";
           }
           return html;
-      } else if(tlc === "fg") {
+      } else if(tlc === "fg" || tlc === "bg") {
           var color = get_next_token(ps, false);
           if(color) {
               var html = render_state.style.length > 0 ? "</span>" : "";
@@ -392,7 +392,9 @@
   function remove_style(render_state, cmd)
   {
       if(cmd[0] === "u") {
-          render_state.style = render_state.style.filter((x) => { x !== cmd[1] });
+          render_state.style = render_state.style.filter((x) => {
+              return x !== cmd[1];
+          });
           render_state.style.sort();
       }
 
@@ -402,7 +404,7 @@
   function apply_color(render_state, cmd, color)
   {
       render_state.style = render_state.style.filter((x) => {
-          x.indexOf(cmd) !== 0
+          return x.indexOf(cmd) !== 0;
       });
       render_state.style.push(cmd + "_" + color.token);
       render_state.style.sort()
