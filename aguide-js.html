@@ -339,6 +339,16 @@
           }
       }
 
+      // Convert any space chars at the beginning of a line to non-breaking
+      html = html.replaceAll(/(<br>(?:<\/?span[^>]*>)*)( +)/gm,
+                             (match, p1, p2, offset, string) => {
+                                 var r = p1;
+                                 for(var i = 0; i < p2.length; ++i) {
+                                     r += "&nbsp;";
+                                 }
+                                 return r;
+                             });
+
       return html;
   }
 
