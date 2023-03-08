@@ -325,8 +325,9 @@
               /* Skip backslash, emit next char */
               html += parse_state_slice(ps2, 1, 2, false);
           } else if(c.token === "@") { /* start cmd */
-              var brace = parse_state_search_token(ps2, /@{[^}]*}/, false);
+              var brace = parse_state_search_token(ps2, /^@{[^}]*}/, true);
               if(brace) {
+                  parse_state_consume_token(ps2, brace);
                   var cmd = brace.token.slice(2, -1);
                   console.log("handle @{" + cmd + "}");
                   html += render_brace_cmd(aguide, cmd, render_state);
