@@ -4,6 +4,10 @@
 <head>
   <title>aguide-js</title>
   <style>
+    body {
+        background-color: #d0d0d0;
+    }
+
     .b {
         font-weight: bold;
     }
@@ -15,6 +19,63 @@
     .u {
         text-decoration-line: underline;
     }
+
+    .fg_text {
+        color: black;
+    }
+
+    .fg_shine {
+        color: white;
+    }
+
+    .fg_shadow {
+        color: gray;
+    }
+
+    .fg_fill {
+        color: gray;
+    }
+
+    .fg_filltext {
+        color: black;
+    }
+
+    .fg_back {
+        color: #d0d0d0;
+    }
+
+    .fg_highlight {
+        color: white;
+    }
+
+    .bg_text {
+        background-color: black;
+    }
+
+    .bg_shine {
+        background-color: white;
+    }
+
+    .bg_shadow {
+        background-color: gray;
+    }
+
+    .bg_fill {
+        background-color: gray;
+    }
+
+    .bg_filltext {
+        background-color: black;
+    }
+
+    .bg_back {
+        background-color: #d0d0d0;
+    }
+
+    .bg_highlight {
+        background-color: white;
+    }
+
   </style>
 </head>
 <body>
@@ -303,6 +364,16 @@
               html += "<span class=\"" + cls + "\">";
           }
           return html;
+      } else if(tlc === "fg") {
+          var color = get_next_token(ps, false);
+          if(color) {
+              var html = render_state.style.length > 0 ? "</span>" : "";
+              var cls = apply_color(render_state, tlc, color);
+              if(cls) {
+                  html += "<span class=\"" + cls + "\">";
+              }
+              return html;
+          }
       }
 
       return "@{" + cmd + "}";
@@ -324,6 +395,17 @@
           render_state.style = render_state.style.filter((x) => { x !== cmd[1] });
           render_state.style.sort();
       }
+
+      return render_state.style.join(" ");
+  }
+
+  function apply_color(render_state, cmd, color)
+  {
+      render_state.style = render_state.style.filter((x) => {
+          x.indexOf(cmd) !== 0
+      });
+      render_state.style.push(cmd + "_" + color.token);
+      render_state.style.sort()
 
       return render_state.style.join(" ");
   }
