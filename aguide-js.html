@@ -98,9 +98,31 @@
 <script>
   function main()
   {
-      const inputElement = document.getElementById("input");
-      inputElement.addEventListener("change", read_input, false);
-      inputElement.click();
+      var params = new URLSearchParams(window.top.location.search);
+      var guideEnc = params.get("guide");
+      if(guideEnc) {
+          guide = decodeURI(guideEnc);
+          console.log("guide = " + guide)
+          if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0) {
+              var xhr = new XMLHttpRequest();
+              xhr.open("GET", guide);
+              xhr.responseType = "blob";
+              xhr.onload = () => {
+                  process_input(xhr.response);
+              };
+              xhr.send();
+          }
+      } else {
+          const inputElement = document.getElementById("input");
+          inputElement.addEventListener("change", read_input, false);
+          inputElement.click();
+      }
+
+      addEventListener("popstate", (event) => {
+          if(event.state) {
+              display_node(event.state.node);
+          }
+      });
   }
 
   function read_input()
@@ -112,10 +134,12 @@
       reader.readAsText(file);
   }
 
+  var AG = null;
+
   function process_input(text)
   {
       var ps = new_tbuf(text);
-      var aguide = parse_aguide(ps);
+      AG = parse_aguide(ps);
 
       var input_div = document.getElementById("div-input");
       input_div.style ="display: none;";
@@ -123,16 +147,16 @@
       var aguide_div = document.getElementById("aguide");
       aguide_div.style = "display: block;";
       
-      if(!aguide) {
+      if(!AG) {
           aguide_div.innerHTML = "Input does not appear to be AmigaGuide";
           return;
       }
       
-      var t = "Parsed an AmigaGuide ${aguide.database}<br>";
-      t += JSON.stringify(aguide.nodes);
+      var t = "Parsed an AmigaGuide ${AG.database}<br>";
+      t += JSON.stringify(AG.nodes);
       console.info(t);
 
-      display_node(aguide, "main", aguide_div);
+      display_node("main");
   }
 
   /******* amiga guide functions *******/
@@ -270,7 +294,7 @@
   function find_node(aguide, name)
   {
       for(i = 0; i < aguide.nodes.length; ++i) {
-          if(aguide.nodes[i].name === name) {
+          if(aguide.nodes[i].name.toLowerCase() === name.toLowerCase()) {
               return aguide.nodes[i];
           }
       }
@@ -278,16 +302,19 @@
       return null;
   }
 
-  /* Display node `name`, rendering to `div` */
-  function display_node(aguide, name, div)
+  /* Display node `name`, rendering to div with id 'aguide' */
+  function display_node(name)
   {
-      var n = find_node(aguide, name);
+      history.pushState({node: name}, null);
+
+      var n = find_node(AG, name);
       if(!n) {
           return;
       }
 
-      html = render_html(aguide, n);
+      html = render_html(AG, n);
 
+      var div = document.getElementById("aguide");
       div.innerHTML = html;
       // div.innerHTML = aguide.text.slice(n.start, n.end);
   }
@@ -354,10 +381,11 @@
 
   function render_brace_cmd(aguide, cmd, render_state)
   {
+      const orig = "@{" + cmd + "}"
       var ps = new_tbuf(cmd);
       var t = get_next_token(ps, false);
       if(!t) {
-          return "";
+          return orig;
       }
 
       var tlc = t.token.toLowerCase();
@@ -385,9 +413,62 @@
               }
               return html;
           }
+      } else {
+          html = render_link(ps, t.token);
+          if(!html) {
+              return orig;
+          }
+          return html;
       }
 
-      return "@{" + cmd + "}";
+      return orig;
+  }
+
+  function render_link(ps, link_text)
+  {
+      link_text = str_translate(link_text,
+                                [{from: /^"/g, to: ""},
+                                 {from: /"$/g, to: ""},
+                                 {from: " ", to: "&nbsp;"}]);
+
+      var t = get_next_token(ps, false);
+      if(!t) {
+          return null;
+      }
+      var command = t.token.toLowerCase();
+
+      if(command === "link") {
+          t = get_next_token(ps, false);
+          if(!t) {
+              return null;
+          }
+          var name = t.token;
+          var line = "";
+
+          t = get_next_token(ps, false);
+          if(t) {
+              line = t.token;
+          }
+
+          var m = name.match(/(.*)\/([^/]+)/);
+          var onclick = "void(0);";
+          if(m) {
+              var file = m[1];
+              var node = m[2];
+          } else {
+              onclick = "display_node(&quot;" + name + "&quot;);";
+          }
+
+          return "<a href=\"#\" onclick=\"" + onclick + "\">" + link_text + "</a>";
+          <!-- return "<a href=\"#\" onclick=\"" + "foo(&quot;Bar&quot;);" + "\">" + link_text + "</a>"; -->
+      }
+
+      return null;
+  }
+
+  function foo(msg)
+  {
+      alert(msg);
   }
 
   function apply_style(render_state, cmd)
@@ -555,11 +636,16 @@
   function tbuf_translate(ps, trs)
   {
       var ps2 = tbuf_fork(ps);
-      trs.forEach((tr) => {
-          ps2.text = ps2.text.replaceAll(tr.from, tr.to);
-      });
-
+      ps2.text = str_translate(ps2.text, trs)
       return ps2;
+  }
+
+  function str_translate(s, trs)
+  {
+      trs.forEach((tr) => {
+          s = s.replaceAll(tr.from, tr.to);
+      });
+      return s;
   }
 
   main();
