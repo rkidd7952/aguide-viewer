@@ -212,6 +212,9 @@
           index_button.disabled = false;
       }
 
+      set_button_link(document.getElementById("button-contents"),
+                      find_toc(AG));
+
       history.replaceState({node: "main", ct: 0}, "main");
       display_node("main");
   }
@@ -393,6 +396,14 @@
       return null;
   }
 
+  function find_toc(aguide)
+  {
+      if(aguide.toc) {
+          return find_node(aguide, aguide.toc);
+      }
+      return find_node(aguide, "main");
+  }
+
   function find_node_next(aguide, name)
   {
       var idx = find_node_index(aguide, name);
@@ -427,7 +438,18 @@
       }
   }
 
-  function set_browse(button, node)
+  function set_contents(aguide, enabled)
+  {
+      let contents = document.getElementById("button-contents");
+      if(enabled) {
+          set_button_link(contents, find_toc(aguide));
+          contents.disabled = false;
+      } else {
+          contents.disabled = true;
+      }
+  }
+
+  function set_button_link(button, node)
   {
       if(!node) {
           button.disabled = true;
@@ -449,10 +471,13 @@
 
       html = render_html(AG, n);
 
-      set_browse(document.getElementById("button-browse-next"),
-                 find_node_next(AG, name));
-      set_browse(document.getElementById("button-browse-prev"),
-                 find_node_prev(AG, name));
+      document.getElementById("button-contents").disabled =
+          (name === find_toc(AG).name);
+
+      set_button_link(document.getElementById("button-browse-next"),
+                      find_node_next(AG, name));
+      set_button_link(document.getElementById("button-browse-prev"),
+                      find_node_prev(AG, name));
 
       var div = document.getElementById("aguide");
       div.innerHTML = html;
