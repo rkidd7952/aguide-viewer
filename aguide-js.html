@@ -118,8 +118,8 @@
     <button type="button" class="button" id="button-index" disabled="true">Index</button>
     <button type="button" class="button" id="button-help" disabled="true">Help</button>
     <button type="button" class="button" id="button-retrace" disabled="true" onclick="history.back()">Retrace</button>
-    <button type="button" class="button" id="button-browse-backward" disabled="true">Browse &lt;</button>
-    <button type="button" class="button" id="button-browse-forward" disabled="true">Browse &gt;</button>
+    <button type="button" class="button" id="button-browse-prev" disabled="true">Browse &lt;</button>
+    <button type="button" class="button" id="button-browse-next" disabled="true">Browse &gt;</button>
   </div>
 
   <div id="aguide" class="aguide">
@@ -319,11 +319,10 @@
 
       console.log("node name " + node.name);
 
-      var title = get_next_token(ps, false);
-      if(!title) {
-          return false;
+      var title = tbuf_search_token(ps, /$/m, false);
+      if(title) {
+          node.title = title.token;
       }
-      node.title = title.token;
       node.start = title.end;
 
       var token = tbuf_search_token(ps, /^@endnode/mi, false);
@@ -373,14 +372,48 @@
       return true;
   }
 
-  function find_node(aguide, name)
+  function find_node_index(aguide, name)
   {
-      for(i = 0; i < aguide.nodes.length; ++i) {
+      for(var i = 0; i < aguide.nodes.length; ++i) {
           if(aguide.nodes[i].name.toLowerCase() === name.toLowerCase()) {
-              return aguide.nodes[i];
+              return i;
           }
       }
 
+      return -1;
+  }
+
+  function find_node(aguide, name)
+  {
+      var i = find_node_index(aguide, name);
+      if(i !== -1) {
+          return aguide.nodes[i];
+      }
+
+      return null;
+  }
+
+  function find_node_next(aguide, name)
+  {
+      var idx = find_node_index(aguide, name);
+      var node = aguide.nodes[idx];
+      if(node.next) {
+          return node.next;
+      } else if(idx + 1 < aguide.nodes.length) {
+          return aguide.nodes[idx + 1];
+      }
+      return null;
+  }
+
+  function find_node_prev(aguide, name)
+  {
+      var idx = find_node_index(aguide, name);
+      var node = aguide.nodes[idx];
+      if(node.prev) {
+          return node.prev;
+      } else if(idx - 1 >= 0) {
+          return aguide.nodes[idx - 1];
+      }
       return null;
   }
 
@@ -394,6 +427,18 @@
       }
   }
 
+  function set_browse(button, node)
+  {
+      if(!node) {
+          button.disabled = true;
+      } else {
+          button.disabled = false;
+          button.onclick = () => {
+              window.location.hash = node.name;
+          };
+      }
+  }
+
   /* Display node `name`, rendering to div with id 'aguide' */
   function display_node(name)
   {
@@ -403,6 +448,11 @@
       }
 
       html = render_html(AG, n);
+
+      set_browse(document.getElementById("button-browse-next"),
+                 find_node_next(AG, name));
+      set_browse(document.getElementById("button-browse-prev"),
+                 find_node_prev(AG, name));
 
       var div = document.getElementById("aguide");
       div.innerHTML = html;
