@@ -92,16 +92,17 @@
         position: fixed;
         background-color: #d0d0d0;
         width: 100%;
-        height: 3em;
-        /* top: 0; */
-        /* left: 0; */
+        height: 1.5em;
+        top: 0;
+        left: 0;
+        padding: .5em;
         /* height: 20px; */
         /* border: 1px solid black; */
     }
 
     div.aguide {
         /* overflow: auto; */
-        padding-top: 3em;
+        padding-top: 2em;
     }
 
   </style>
@@ -113,12 +114,12 @@
     <!-- <label for="open-file" class="open-file button">Open</label> -->
     <input type="file" id="open-file"/>
     <button type="button" class="button" onclick="document.getElementById(&quot;open-file&quot;).click();">Open File...</button>
-    <button type="button" class="button" disabled="true">Contents</button>
-    <button type="button" class="button" disabled="true">Index</button>
-    <button type="button" class="button" disabled="true">Help</button>
-    <button type="button" class="button" disabled="true">Retrace</button>
-    <button type="button" class="button" disabled="true">Browse &lt;</button>
-    <button type="button" class="button" disabled="true">Browse &gt;</button>
+    <button type="button" class="button" id="button-contents" disabled="true">Contents</button>
+    <button type="button" class="button" id="button-index" disabled="true">Index</button>
+    <button type="button" class="button" id="button-help" disabled="true">Help</button>
+    <button type="button" class="button" id="button-retrace" disabled="true" onclick="history.back()">Retrace</button>
+    <button type="button" class="button" id="button-browse-backward" disabled="true">Browse &lt;</button>
+    <button type="button" class="button" id="button-browse-forward" disabled="true">Browse &gt;</button>
   </div>
 
   <div id="aguide" class="aguide">
@@ -149,11 +150,24 @@
           inputElement.click();
       }
 
-      addEventListener("popstate", (event) => {
-          if(event.state) {
-              display_node(event.state.node);
-          }
-      });
+      addEventListener("popstate", handle_popstate);
+  }
+
+  function handle_popstate(event)
+  {
+      if(event.state && event.state.node === "main") {
+          document.getElementById("button-retrace").disabled = true;
+      } else {
+          document.getElementById("button-retrace").disabled = false;
+      }          
+      display_node_hash();
+  }
+
+  function handle_click_link(event)
+  {
+      display_node_hash();
+      document.getElementById("button-retrace").disabled = false;
+      return true;
   }
 
   function read_input()
@@ -172,11 +186,8 @@
       var ps = new_tbuf(text);
       AG = parse_aguide(ps);
 
-      // var input_div = document.getElementById("div-input");
-      // input_div.style ="display: none;";
-
       var aguide_div = document.getElementById("aguide");
-      // aguide_div.style = "display: block;";
+      aguide_div.addEventListener("onload", () => {alert("onload")});
       
       if(!AG) {
           aguide_div.innerHTML = "Input does not appear to be AmigaGuide";
@@ -187,6 +198,12 @@
       t += JSON.stringify(AG.nodes);
       console.info(t);
 
+      if(AG.index) {
+          document.getElementById("button-index").disabled = false;
+          index_button.disabled = false;
+      }
+
+      history.replaceState({node: "main", ct: 0}, "main");
       display_node("main");
   }
 
@@ -212,7 +229,9 @@
 
       const cmd_handlers = [
           { cmd: "@master", handler: finish_cmd_master },
-          { cmd: "@node", handler: finish_cmd_node }
+          { cmd: "@node", handler: finish_cmd_node },
+          { cmd: "@index", handler: finish_cmd_index },
+          { cmd: "@remark", handler: finish_cmd_remark }
       ];
 
       var e = true;
@@ -287,7 +306,9 @@
       if(!name) {
           return false;
       }
-      node.name = name.token.toLowerCase();
+      node.name = str_strip_quote(name.token.toLowerCase());
+
+      console.log("node name " + node.name);
 
       var title = get_next_token(ps, false);
       if(!title) {
@@ -296,7 +317,7 @@
       node.title = title.token;
       node.start = title.end;
 
-      var token = tbuf_search_token(ps, /^@endnode/m, false);
+      var token = tbuf_search_token(ps, /^@endnode/mi, false);
 
       if(!token) {
           return false;
@@ -322,6 +343,27 @@
       return true;
   }
 
+  function finish_cmd_index(ps, token, aguide)
+  {
+      var index = get_next_token(ps, false);
+      if(!index) {
+          return false;
+      }
+      aguide.index = index;
+      console.info("  index.node = " + index);
+      return true;
+  }
+
+  function finish_cmd_remark(ps, token, aguide)
+  {
+      /* eat everything to end of line */
+      var eol = tbuf_search_token(ps, /$/m, false);
+      if(eol) {
+          console.info("  remark: " + ps.text.slice(token.start, eol.end));
+      }
+      return true;
+  }
+
   function find_node(aguide, name)
   {
       for(i = 0; i < aguide.nodes.length; ++i) {
@@ -333,11 +375,19 @@
       return null;
   }
 
+  function display_node_hash()
+  {
+      var u = new URL(window.location)
+      if(u.hash && u.hash[0] === "#") {
+          display_node(u.hash.slice(1))
+      } else {
+          display_node("main")
+      }
+  }
+
   /* Display node `name`, rendering to div with id 'aguide' */
   function display_node(name)
   {
-      history.pushState({node: name}, null);
-
       var n = find_node(AG, name);
       if(!n) {
           return;
@@ -481,16 +531,18 @@
               line = t.token;
           }
 
+          name = str_strip_quote(name)
+
           var m = name.match(/(.*)\/([^/]+)/);
-          var onclick = "void(0);";
+          var link = "javascript:void(0);";
           if(m) {
               var file = m[1];
               var node = m[2];
           } else {
-              onclick = "display_node(&quot;" + name + "&quot;);";
+              link = "#" + name;
           }
 
-          return "<a href=\"#\" onclick=\"" + onclick + "\">" + link_text + "</a>";
+          return "<a href=\"" + link + "\" onclick=\"handle_click_link();\">" + link_text + "</a>";
           <!-- return "<a href=\"#\" onclick=\"" + "foo(&quot;Bar&quot;);" + "\">" + link_text + "</a>"; -->
       }
 
@@ -677,6 +729,12 @@
           s = s.replaceAll(tr.from, tr.to);
       });
       return s;
+  }
+
+  function str_strip_quote(s)
+  {
+      return str_translate(s, [{from: /^"/g, to: ""},
+                               {from: /"$/g, to: ""}]);
   }
 
   main();
