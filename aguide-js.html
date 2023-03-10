@@ -130,7 +130,7 @@
 <script>
   function main()
   {
-      var params = new URLSearchParams(window.top.location.search);
+      var params = new URLSearchParams(window.location.search);
       var guideEnc = params.get("guide");
       if(guideEnc) {
           guide = decodeURI(guideEnc);
@@ -151,6 +151,7 @@
       }
 
       addEventListener("popstate", handle_popstate);
+      addEventListener("hashchange", display_node_hash);
   }
 
   function handle_popstate(event)
@@ -197,6 +198,14 @@
       var t = "Parsed an AmigaGuide ${AG.database}<br>";
       t += JSON.stringify(AG.nodes);
       console.info(t);
+
+      var u = new URL(window.location);
+      if(u.hash) {
+          u.hash = "#";
+          window.location = u.toString();
+      }
+
+      document.getElementById("button-retrace").disabled = true;
 
       if(AG.index) {
           document.getElementById("button-index").disabled = false;
