@@ -213,7 +213,7 @@
       }
 
       set_button_link(document.getElementById("button-contents"),
-                      find_toc(AG));
+                      find_node(AG, "main"));
 
       history.replaceState({node: "main", ct: 0}, "main");
       display_node("main");
@@ -396,10 +396,10 @@
       return null;
   }
 
-  function find_toc(aguide)
+  function find_toc(aguide, node)
   {
-      if(aguide.toc) {
-          return find_node(aguide, aguide.toc);
+      if(node.toc) {
+          return find_node(aguide, node.toc);
       }
       return find_node(aguide, "main");
   }
@@ -438,17 +438,6 @@
       }
   }
 
-  function set_contents(aguide, enabled)
-  {
-      let contents = document.getElementById("button-contents");
-      if(enabled) {
-          set_button_link(contents, find_toc(aguide));
-          contents.disabled = false;
-      } else {
-          contents.disabled = true;
-      }
-  }
-
   function set_button_link(button, node)
   {
       if(!node) {
@@ -471,8 +460,8 @@
 
       let html = render_html(AG, n);
 
-      document.getElementById("button-contents").disabled =
-          (name === find_toc(AG).name);
+      let toc = find_toc(AG, n)
+      document.getElementById("button-contents").disabled = (name === toc.name);
 
       set_button_link(document.getElementById("button-browse-next"),
                       find_node_next(AG, name));
@@ -492,6 +481,7 @@
       let ps = new_node_tbuf(aguide, node);
 
       const cmd_handlers = [
+          { cmd: "@toc", handler: handle_toc }
       ];
    
       let ps2 = tbuf_translate(ps,
@@ -525,8 +515,9 @@
                   html += render_brace_cmd(aguide, cmd, render_state);
               } else {
                   let t = get_next_token(ps2, false);
+                  let cmd_handler = get_handler(cmd_handlers, t.token.toLowerCase());
                   console.log("handle cmd " + t.token);
-                  html += t.token;
+                  html += cmd_handler(aguide, node, t, ps2);
               }
           }
       }
@@ -542,6 +533,13 @@
                              });
 
       return html;
+  }
+
+  function handle_toc(aguide, node, cmd, ps)
+  {
+      let t = get_next_token(ps, false);
+      node.toc = str_strip_quote(t.token.toLowerCase());
+      return "";
   }
 
   function render_brace_cmd(aguide, cmd, render_state)
