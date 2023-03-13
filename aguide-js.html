@@ -409,7 +409,7 @@
       let idx = find_node_index(aguide, name);
       let node = aguide.nodes[idx];
       if(node.next) {
-          return node.next;
+          return find_node(aguide, node.next);
       } else if(idx + 1 < aguide.nodes.length) {
           return aguide.nodes[idx + 1];
       }
@@ -421,7 +421,7 @@
       let idx = find_node_index(aguide, name);
       let node = aguide.nodes[idx];
       if(node.prev) {
-          return node.prev;
+          return find_node(aguide, node.prev);
       } else if(idx - 1 >= 0) {
           return aguide.nodes[idx - 1];
       }
@@ -432,7 +432,7 @@
   {
       let u = new URL(window.location)
       if(u.hash && u.hash[0] === "#") {
-          display_node(u.hash.slice(1))
+          display_node(decodeURI(u.hash.slice(1)))
       } else {
           display_node("main")
       }
@@ -445,7 +445,7 @@
       } else {
           button.disabled = false;
           button.onclick = () => {
-              window.location.hash = node.name;
+              window.location.hash = encodeURI(node.name);
           };
       }
   }
@@ -481,7 +481,9 @@
       let ps = new_node_tbuf(aguide, node);
 
       const cmd_handlers = [
-          { cmd: "@toc", handler: handle_toc }
+          { cmd: "@toc", handler: handle_toc_next_prev },
+          { cmd: "@next", handler: handle_toc_next_prev },
+          { cmd: "@prev", handler: handle_toc_next_prev }
       ];
    
       let ps2 = tbuf_translate(ps,
@@ -515,9 +517,14 @@
                   html += render_brace_cmd(aguide, cmd, render_state);
               } else {
                   let t = get_next_token(ps2, false);
-                  let cmd_handler = get_handler(cmd_handlers, t.token.toLowerCase());
-                  console.log("handle cmd " + t.token);
-                  html += cmd_handler(aguide, node, t, ps2);
+                  let cmd = t.token.toLowerCase();
+                  let cmd_handler = get_handler(cmd_handlers, cmd);
+                  console.log("handle cmd " + cmd);
+                  if(cmd_handler) {
+                      html += cmd_handler(aguide, node, cmd, ps2);
+                  } else {
+                      html += t.token;
+                  }
               }
           }
       }
@@ -535,10 +542,17 @@
       return html;
   }
 
-  function handle_toc(aguide, node, cmd, ps)
+  function handle_toc_next_prev(aguide, node, cmd, ps)
   {
       let t = get_next_token(ps, false);
-      node.toc = str_strip_quote(t.token.toLowerCase());
+      let n = str_strip_quote(t.token.toLowerCase());
+      if(cmd === "@toc") {
+          node.toc = n;
+      } else if(cmd === "@next") {
+          node.next = n;
+      } else if(cmd === "@prev") {
+          node.prev = n;
+      }
       return "";
   }
 
@@ -621,7 +635,7 @@
               let file = m[1];
               let node = m[2];
           } else {
-              link = "#" + name;
+              link = "#" + encodeURI(name);
           }
 
           return "<a href=\"" + link + "\" onclick=\"handle_click_link();\">" + link_text + "</a>";
