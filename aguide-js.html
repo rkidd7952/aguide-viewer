@@ -130,13 +130,13 @@
 <script>
   function main()
   {
-      var params = new URLSearchParams(window.location.search);
-      var guideEnc = params.get("guide");
+      let params = new URLSearchParams(window.location.search);
+      let guideEnc = params.get("guide");
       if(guideEnc) {
-          guide = decodeURI(guideEnc);
+          let guide = decodeURI(guideEnc);
           console.log("guide = " + guide)
           if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0) {
-              var xhr = new XMLHttpRequest();
+              let xhr = new XMLHttpRequest();
               xhr.open("GET", guide);
               xhr.responseType = "blob";
               xhr.onload = () => {
@@ -174,7 +174,7 @@
   function read_input()
   {
       const file = this.files.item(0);
-      var reader = new FileReader();
+      let reader = new FileReader();
       reader.addEventListener("load", () => { process_input(reader.result); },
                               false);
       reader.readAsText(file);
@@ -184,10 +184,10 @@
 
   function process_input(text)
   {
-      var ps = new_tbuf(text);
+      let ps = new_tbuf(text);
       AG = parse_aguide(ps);
 
-      var aguide_div = document.getElementById("aguide");
+      let aguide_div = document.getElementById("aguide");
       aguide_div.addEventListener("onload", () => {alert("onload")});
       
       if(!AG) {
@@ -195,11 +195,11 @@
           return;
       }
       
-      var t = "Parsed an AmigaGuide ${AG.database}<br>";
+      let t = "Parsed an AmigaGuide ${AG.database}<br>";
       t += JSON.stringify(AG.nodes);
       console.info(t);
 
-      var u = new URL(window.location);
+      let u = new URL(window.location);
       if(u.hash) {
           u.hash = "#";
           window.location = u.toString();
@@ -222,7 +222,7 @@
   /******* amiga guide functions *******/
   function get_handler(handlers, name)
   {
-      for(i = 0; i < handlers.length; ++i) {
+      for(let i = 0; i < handlers.length; ++i) {
           if(handlers[i].cmd === name) {
               return handlers[i].handler;
           }
@@ -233,7 +233,7 @@
 
   function parse_aguide(ps)
   {
-      var aguide = new_aguide(ps);
+      let aguide = new_aguide(ps);
 
       if(!aguide) {
           return null;
@@ -246,17 +246,17 @@
           { cmd: "@remark", handler: finish_cmd_remark }
       ];
 
-      var e = true;
+      let e = true;
       while(aguide && !at_eof(ps) && e === true) {
-          var token = tbuf_search_token(ps, /^@\S+/m, false);
+          let token = tbuf_search_token(ps, /^@\S+/m, false);
           if(!token) {
               break;
           }
 
-          var t = token.token.toLowerCase();
+          let t = token.token.toLowerCase();
           console.info("Parsed token: " + t);
 
-          var cmd_handler = get_handler(cmd_handlers, t);
+          let cmd_handler = get_handler(cmd_handlers, t);
           if(cmd_handler) {
               e = cmd_handler(ps, token, aguide);
           }//  else {
@@ -271,14 +271,14 @@
   // `@database <name>` command
   function new_aguide(ps)
   {
-      var token = get_next_token(ps, false);
+      let token = get_next_token(ps, false);
       if(!token || token.token.toLowerCase() !== "@database") {
           return null;
       }
 
       console.info("Reading AmigaGuide: found @database");
 
-      var db_name = get_next_token(ps, false);
+      let db_name = get_next_token(ps, false);
       if(!db_name) {
           return null;
       }
@@ -293,7 +293,7 @@
   // Return true on success, false on error
   function finish_cmd_master(ps, token, aguide)
   {
-      var path = get_next_token(ps, false);
+      let path = get_next_token(ps, false);
       if(!path) {
           return false;
       }
@@ -305,7 +305,7 @@
   // token is @node, parse name, title, find @endnode
   function finish_cmd_node(ps, token, aguide)
   {
-      var node = {
+      let node = {
           name: "",
           title : "",
           start_cmd: token.start, // @ in @node
@@ -314,7 +314,7 @@
           end: -1             // index past end of @endnode
       };
 
-      var name = get_next_token(ps, false);
+      let name = get_next_token(ps, false);
       if(!name) {
           return false;
       }
@@ -322,13 +322,13 @@
 
       console.log("node name " + node.name);
 
-      var title = tbuf_search_token(ps, /$/m, false);
+      let title = tbuf_search_token(ps, /$/m, false);
       if(title) {
           node.title = title.token;
       }
       node.start = title.end;
 
-      var token = tbuf_search_token(ps, /^@endnode/mi, false);
+      token = tbuf_search_token(ps, /^@endnode/mi, false);
 
       if(!token) {
           return false;
@@ -337,10 +337,10 @@
       node.end = token.start;
       node.end_cmd = token.end;
 
-      var en_name = get_next_token(ps, true);
+      let en_name = get_next_token(ps, true);
       if(en_name && en_name.token.toLowerCase()[0] != "@") {
           tbuf_consume_token(ps, en_name);
-          var n = en_name.token.toLowerCase();
+          let n = en_name.token.toLowerCase();
           if(n !== node.name) {
               console.error("Found @endnode with name " + n + " for @node name " + node.name);
           } else {
@@ -356,7 +356,7 @@
 
   function finish_cmd_index(ps, token, aguide)
   {
-      var index = get_next_token(ps, false);
+      let index = get_next_token(ps, false);
       if(!index) {
           return false;
       }
@@ -368,7 +368,7 @@
   function finish_cmd_remark(ps, token, aguide)
   {
       /* eat everything to end of line */
-      var eol = tbuf_search_token(ps, /$/m, false);
+      let eol = tbuf_search_token(ps, /$/m, false);
       if(eol) {
           console.info("  remark: " + ps.text.slice(token.start, eol.end));
       }
@@ -377,7 +377,7 @@
 
   function find_node_index(aguide, name)
   {
-      for(var i = 0; i < aguide.nodes.length; ++i) {
+      for(let i = 0; i < aguide.nodes.length; ++i) {
           if(aguide.nodes[i].name.toLowerCase() === name.toLowerCase()) {
               return i;
           }
@@ -388,7 +388,7 @@
 
   function find_node(aguide, name)
   {
-      var i = find_node_index(aguide, name);
+      let i = find_node_index(aguide, name);
       if(i !== -1) {
           return aguide.nodes[i];
       }
@@ -406,8 +406,8 @@
 
   function find_node_next(aguide, name)
   {
-      var idx = find_node_index(aguide, name);
-      var node = aguide.nodes[idx];
+      let idx = find_node_index(aguide, name);
+      let node = aguide.nodes[idx];
       if(node.next) {
           return node.next;
       } else if(idx + 1 < aguide.nodes.length) {
@@ -418,8 +418,8 @@
 
   function find_node_prev(aguide, name)
   {
-      var idx = find_node_index(aguide, name);
-      var node = aguide.nodes[idx];
+      let idx = find_node_index(aguide, name);
+      let node = aguide.nodes[idx];
       if(node.prev) {
           return node.prev;
       } else if(idx - 1 >= 0) {
@@ -430,7 +430,7 @@
 
   function display_node_hash()
   {
-      var u = new URL(window.location)
+      let u = new URL(window.location)
       if(u.hash && u.hash[0] === "#") {
           display_node(u.hash.slice(1))
       } else {
@@ -464,12 +464,12 @@
   /* Display node `name`, rendering to div with id 'aguide' */
   function display_node(name)
   {
-      var n = find_node(AG, name);
+      let n = find_node(AG, name);
       if(!n) {
           return;
       }
 
-      html = render_html(AG, n);
+      let html = render_html(AG, n);
 
       document.getElementById("button-contents").disabled =
           (name === find_toc(AG).name);
@@ -479,7 +479,7 @@
       set_button_link(document.getElementById("button-browse-prev"),
                       find_node_prev(AG, name));
 
-      var div = document.getElementById("aguide");
+      let div = document.getElementById("aguide");
       div.innerHTML = html;
       // div.innerHTML = aguide.text.slice(n.start, n.end);
   }
@@ -487,25 +487,25 @@
   /* Translate amiga guide node to HTML */
   function render_html(aguide, node)
   {
-      var html = "";
+      let html = "";
 
-      var ps = new_node_tbuf(aguide, node);
+      let ps = new_node_tbuf(aguide, node);
 
       const cmd_handlers = [
       ];
    
-      var ps2 = tbuf_translate(ps,
+      let ps2 = tbuf_translate(ps,
                                [{from: "<", to: "&lt;"},
                                 {from: ">", to: "&gt;"},
                                 {from: "\n", to: "<br>"}]);
-      var render_state = {
+      let render_state = {
           style: []
       };
 
       while(!at_eof(ps2)) {
           console.info("pos: " + ps2.pos);
 
-          var c = tbuf_search_token(ps2, /[\\@]/, true);
+          let c = tbuf_search_token(ps2, /[\\@]/, true);
           if(!c) {
               html += tbuf_slice(ps2, ps2.pos, -1, false);
               break;
@@ -517,14 +517,14 @@
               /* Skip backslash, emit next char */
               html += tbuf_slice(ps2, 1, 2, false);
           } else if(c.token === "@") { /* start cmd */
-              var brace = tbuf_search_token(ps2, /^@{[^}]*}/, true);
+              let brace = tbuf_search_token(ps2, /^@{[^}]*}/, true);
               if(brace) {
                   tbuf_consume_token(ps2, brace);
-                  var cmd = brace.token.slice(2, -1);
+                  let cmd = brace.token.slice(2, -1);
                   console.log("handle @{" + cmd + "}");
                   html += render_brace_cmd(aguide, cmd, render_state);
               } else {
-                  var t = get_next_token(ps2, false);
+                  let t = get_next_token(ps2, false);
                   console.log("handle cmd " + t.token);
                   html += t.token;
               }
@@ -534,8 +534,8 @@
       // Convert any space chars at the beginning of a line to non-breaking
       html = html.replaceAll(/(<br>(?:<\/?span[^>]*>)*)( +)/gm,
                              (match, p1, p2, offset, string) => {
-                                 var r = p1;
-                                 for(var i = 0; i < p2.length; ++i) {
+                                 let r = p1;
+                                 for(let i = 0; i < p2.length; ++i) {
                                      r += "&nbsp;";
                                  }
                                  return r;
@@ -547,39 +547,39 @@
   function render_brace_cmd(aguide, cmd, render_state)
   {
       const orig = "@{" + cmd + "}"
-      var ps = new_tbuf(cmd);
-      var t = get_next_token(ps, false);
+      let ps = new_tbuf(cmd);
+      let t = get_next_token(ps, false);
       if(!t) {
           return orig;
       }
 
-      var tlc = t.token.toLowerCase();
+      let tlc = t.token.toLowerCase();
       if(tlc === "b" || tlc === "i" || tlc === "u") {
-          var html = render_state.style.length > 0 ? "</span>" : "";
-          var cls = apply_style(render_state, tlc);
+          let html = render_state.style.length > 0 ? "</span>" : "";
+          let cls = apply_style(render_state, tlc);
           if(cls) {
               html += "<span class=\"" + cls + "\">";
           }
           return html;
       } else if(tlc === "ub" || tlc === "ui" || tlc === "uu") {
-          var html = render_state.style.length > 0 ? "</span>" : "";
-          var cls = remove_style(render_state, tlc);
+          let html = render_state.style.length > 0 ? "</span>" : "";
+          let cls = remove_style(render_state, tlc);
           if(cls) {
               html += "<span class=\"" + cls + "\">";
           }
           return html;
       } else if(tlc === "fg" || tlc === "bg") {
-          var color = get_next_token(ps, false);
+          let color = get_next_token(ps, false);
           if(color) {
-              var html = render_state.style.length > 0 ? "</span>" : "";
-              var cls = apply_color(render_state, tlc, color);
+              let html = render_state.style.length > 0 ? "</span>" : "";
+              let cls = apply_color(render_state, tlc, color);
               if(cls) {
                   html += "<span class=\"" + cls + "\">";
               }
               return html;
           }
       } else {
-          html = render_link(ps, t.token);
+          let html = render_link(ps, t.token);
           if(!html) {
               return orig;
           }
@@ -596,19 +596,19 @@
                                  {from: /"$/g, to: ""},
                                  {from: " ", to: "&nbsp;"}]);
 
-      var t = get_next_token(ps, false);
+      let t = get_next_token(ps, false);
       if(!t) {
           return null;
       }
-      var command = t.token.toLowerCase();
+      let command = t.token.toLowerCase();
 
       if(command === "link") {
           t = get_next_token(ps, false);
           if(!t) {
               return null;
           }
-          var name = t.token;
-          var line = "";
+          let name = t.token;
+          let line = "";
 
           t = get_next_token(ps, false);
           if(t) {
@@ -617,11 +617,11 @@
 
           name = str_strip_quote(name)
 
-          var m = name.match(/(.*)\/([^/]+)/);
-          var link = "javascript:void(0);";
+          let m = name.match(/(.*)\/([^/]+)/);
+          let link = "javascript:void(0);";
           if(m) {
-              var file = m[1];
-              var node = m[2];
+              let file = m[1];
+              let node = m[2];
           } else {
               link = "#" + name;
           }
@@ -700,23 +700,23 @@
   // peek: if true, don't update parse state
   function get_next_token(ps, peek)
   {
-      var pos = ps.pos;
+      let pos = ps.pos;
 
       // skip to first not-whitespace
-      var next_ws = ps.text.slice(pos).search(/\S/);
+      let next_ws = ps.text.slice(pos).search(/\S/);
       if(next_ws === -1) {
           return null;
       }
 
       pos += next_ws;
 
-      var begins_line = false;
+      let begins_line = false;
       if(pos > 0 && ps.text[pos - 1] == '\n') {
           begins_line = true;
       }
 
-      var next_re = /\s/;
-      var quoted = 0;
+      let next_re = /\s/;
+      let quoted = 0;
       // If current char is double quote, token is all text up to matching
       // quote.
       if(ps.text[pos] === '"') {
@@ -724,11 +724,11 @@
           quoted = 1;
       }
 
-      var next = ps.text.slice(pos + quoted).search(next_re);
+      let next = ps.text.slice(pos + quoted).search(next_re);
       if(next === -1) {
           /* token is all text to end */
-          var token = ps.text.slice(pos);
-          var end = pos + token.length;
+          let token = ps.text.slice(pos);
+          let end = pos + token.length;
           if(peek === false) {
               tbuf_consume_to(ps, end);
           }
@@ -736,8 +736,8 @@
       }
 
       next += quoted * 2;
-      var token = ps.text.slice(pos, pos + next);
-      var end = pos + next;
+      let token = ps.text.slice(pos, pos + next);
+      let end = pos + next;
       if(peek === false) {
           tbuf_consume_to(ps, end);
       }
@@ -752,13 +752,13 @@
   function tbuf_slice(ps, start, end, peek)
   {
       if(end !== -1) {
-          var t = ps.text.slice(ps.pos + start, ps.pos + end);
+          let t = ps.text.slice(ps.pos + start, ps.pos + end);
           if(peek === false) {
               tbuf_consume_to(ps, ps.pos + end);
           }
           return t;
       }
-      var t = ps.text.slice(ps.pos + start);
+      let t = ps.text.slice(ps.pos + start);
       if(peek === false) {
           tbuf_consume_to(ps, ps.text.length);
       }
@@ -767,17 +767,17 @@
 
   function tbuf_search_token(ps, re, peek)
   {
-      var pos = ps.pos;
-      var start = ps.text.slice(pos).search(re);
+      let pos = ps.pos;
+      let start = ps.text.slice(pos).search(re);
       if(start === -1) {
           return null;
       }
 
-      var token = ps.text.slice(pos).match(re);
+      let token = ps.text.slice(pos).match(re);
       if(token.length <= 0) {
           return null;
       }
-      var end = pos + start + token[0].length;
+      let end = pos + start + token[0].length;
 
       if(peek === false) {
           tbuf_consume_to(ps, end);
@@ -802,7 +802,7 @@
   //      y: replacement
   function tbuf_translate(ps, trs)
   {
-      var ps2 = tbuf_fork(ps);
+      let ps2 = tbuf_fork(ps);
       ps2.text = str_translate(ps2.text, trs)
       return ps2;
   }
