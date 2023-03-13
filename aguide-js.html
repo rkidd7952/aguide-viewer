@@ -175,17 +175,18 @@
   {
       const file = this.files.item(0);
       let reader = new FileReader();
-      reader.addEventListener("load", () => { process_input(reader.result); },
+      reader.addEventListener("load", () => { process_input(reader.result, file.name); },
                               false);
       reader.readAsText(file);
   }
 
   var AG = null;
 
-  function process_input(text)
+  function process_input(text, filename)
   {
       let ps = new_tbuf(text);
       AG = parse_aguide(ps);
+      AG.filename = filename;
 
       let aguide_div = document.getElementById("aguide");
       aguide_div.addEventListener("onload", () => {alert("onload")});
@@ -195,7 +196,7 @@
           return;
       }
       
-      let t = "Parsed an AmigaGuide ${AG.database}<br>";
+      let t = "Parsed an AmigaGuide "+AG.database+" from "+filename+"<br>";
       t += JSON.stringify(AG.nodes);
       console.info(t);
 
@@ -322,9 +323,9 @@
 
       console.log("node name " + node.name);
 
-      let title = tbuf_search_token(ps, /$/m, false);
+      let title = tbuf_search_token(ps, /.*$/m, false);
       if(title) {
-          node.title = title.token;
+          node.title = str_strip_quote(title.token.trim());
       }
       node.start = title.end;
 
@@ -450,6 +451,14 @@
       }
   }
 
+  function get_title(aguide, node)
+  {
+      if(node.title) {
+          return node.title;
+      }
+      return aguide.database;
+  }
+
   /* Display node `name`, rendering to div with id 'aguide' */
   function display_node(name)
   {
@@ -468,6 +477,7 @@
       set_button_link(document.getElementById("button-browse-prev"),
                       find_node_prev(AG, name));
 
+      document.title = get_title(AG, n);
       let div = document.getElementById("aguide");
       div.innerHTML = html;
       // div.innerHTML = aguide.text.slice(n.start, n.end);
