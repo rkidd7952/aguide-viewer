@@ -770,9 +770,9 @@
           }
           return t;
       }
-      let t = ps.text.slice(ps.pos + start);
+      let t = ps.text.slice(ps.pos);
       if(peek === false) {
-          tbuf_consume_to(ps, ps.text.length);
+          tbuf_consume_to(ps, ps.pos + t.length);
       }
       return t;
   }
