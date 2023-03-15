@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<meta charset="iso-8859-1" />
+<meta charset="ISO-8859-1" />
 <head>
   <title>aguide-js</title>
 </head>
@@ -35,8 +35,21 @@
   function init_page(show_open)
   {
       style_text = `
-    body {
-        background-color: #d0d0d0;
+    a.ag {
+        border-top: 2px solid #ffffff;
+        border-left: 2px solid #ffffff;
+        border-right: 2px solid #000000;
+        border-bottom: 2px solid #000000;
+        text-decoration: none;
+        line-height: 1.4;
+        display: inline-block;
+    }
+
+    a.ag:active {
+        border-top: 2px solid #000000;
+        border-left: 2px solid #000000;
+        border-right: 2px solid #ffffff;
+        border-bottom: 2px solid #ffffff;
     }
 
     .b {
@@ -51,60 +64,60 @@
         text-decoration-line: underline;
     }
 
-    .fg_text {
-        color: black;
+    a.ag, .fg_text {
+        color: #000000;
     }
 
     .fg_shine {
-        color: white;
+        color: #ffffff;
     }
 
     .fg_shadow {
-        color: gray;
+        color: #000000;
     }
 
     .fg_fill {
-        color: gray;
+        color: #6688bb;
     }
 
-    .fg_filltext {
-        color: black;
+    a.ag:active, .fg_filltext {
+        color: #000000;
     }
 
     .fg_back {
-        color: #d0d0d0;
+        color: #aaaaaa;
     }
 
     .fg_highlight {
-        color: white;
+        color: #ffffff;
     }
 
     .bg_text {
-        background-color: black;
+        background-color: #000000;
     }
 
     .bg_shine {
-        background-color: white;
+        background-color: #ffffff;
     }
 
     .bg_shadow {
-        background-color: gray;
+        background-color: #000000;
     }
 
-    .bg_fill {
-        background-color: gray;
+    a.ag:active, .bg_fill {
+        background-color: #6688bb;
     }
 
     .bg_filltext {
-        background-color: black;
+        background-color: #000000;
     }
 
-    .bg_back {
-        background-color: #d0d0d0;
+    div.toolbar, body, .bg_back {
+        background-color: #aaaaaa;
     }
 
     .bg_highlight {
-        background-color: white;
+        background-color: #ffffff;
     }
 
     input[type="file"] {
@@ -116,7 +129,6 @@
 
     div.toolbar {
         position: fixed;
-        background-color: #d0d0d0;
         width: 100%;
         height: 1.5em;
         top: 0;
@@ -132,7 +144,7 @@
       let s = document.createElement("style");
       s.innerText = style_text;
       document.head.append(s);
-
+      
       let b = document.getElementsByTagName("body");
       let body = null;
 
@@ -144,9 +156,8 @@
       }
       
       body.innerHTML = `<div>
-  <div class="toolbar">
-    <input type="file" id="open-file"/>` +
-          (show_open ? `<button type="button" class="button" onclick="document.getElementById(&quot;open-file&quot;).click();">Open File...</button>` : ``) + `
+  <div class="toolbar">` +
+          (show_open ? `<input type="file" id="open-file"/><button type="button" class="button" onclick="document.getElementById(&quot;open-file&quot;).click();">Open File...</button>` : ``) + `
     <button type="button" class="button" id="button-contents" disabled="true">Contents</button>
     <button type="button" class="button" id="button-index" disabled="true">Index</button>
     <button type="button" class="button" id="button-help" disabled="true">Help</button>
@@ -616,10 +627,10 @@
 
   function render_link(ps, link_text)
   {
+      link_text = str_strip_quote(link_text);
+      let link_text_len = link_text.length;
       link_text = str_translate(link_text,
-                                [{from: /^"/g, to: ""},
-                                 {from: /"$/g, to: ""},
-                                 {from: " ", to: "&nbsp;"}]);
+                                [{from: " ", to: "&nbsp;"}]);
 
       let t = get_next_token(ps, false);
       if(!t) {
@@ -651,15 +662,18 @@
               link = "#" + encodeURI(name);
           }
 
-          return "<a href=\"" + link + "\" onclick=\"handle_click_link();\">" + link_text + "</a>";
+          let a = document.createElement("a");
+          a.className = "ag";
+          a.href = link;
+          a.onclick = handle_click_link;
+          a.innerHTML = link_text;
+          a.style = "width: " + link_text_len + "em;";
+          return a.outerHTML;
+          
+          /* return "<a class=\"ag\" href=\"" + link + "\" onclick=\"handle_click_link();\">" + link_text + "</a>"; */
       }
 
       return null;
-  }
-
-  function foo(msg)
-  {
-      alert(msg);
   }
 
   function apply_style(render_state, cmd)
