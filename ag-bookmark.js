@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html>
-<meta charset="iso-8859-1" />
-<head>
-  <title>aguide-js</title>
-</head>
-<body>
-
-<script>
+javascript:/*(function(ag_text){ */
+  let ag_text = document.firstChild.textContent;
   function main()
   {
       init_page(true);
@@ -207,12 +200,6 @@
       t += JSON.stringify(AG.nodes);
       console.info(t);
 
-      let u = new URL(window.location);
-      if(u.hash) {
-          u.hash = "#";
-          window.location = u.toString();
-      }
-
       document.getElementById("button-retrace").disabled = true;
 
       if(AG.index) {
@@ -224,7 +211,14 @@
                       find_node(AG, "main"));
 
       history.replaceState({node: "main", ct: 0}, "main");
-      display_node("main");
+
+      let u = new URL(window.location);
+      let node = "main";
+      if(u.hash && u.hash[0] === "#") {
+          node = decodeURI(u.hash.slice(1));
+      }
+
+      display_node(node);
   }
 
   /******* amiga guide functions *******/
@@ -274,7 +268,7 @@
   }
 
   /* Create a new aguide struct and parse the initial
-   * `@database <name>` command */
+     `@database <name>` command */
   function new_aguide(ps)
   {
       let token = get_next_token(ps, false);
@@ -296,7 +290,7 @@
   }
 
   /* token is @master, parse path
-   * Return true on success, false on error */
+     Return true on success, false on error */
   function finish_cmd_master(ps, token, aguide)
   {
       let path = get_next_token(ps, false);
@@ -737,7 +731,7 @@
       let next_re = /\s/;
       let quoted = 0;
       /* If current char is double quote, token is all text up to matching
-       * quote. */
+         quote. */
       if(ps.text[pos] === '"') {
           next_re = /"/;
           quoted = 1;
@@ -840,8 +834,6 @@
                                {from: /"$/g, to: ""}]);
   }
 
-  main();
-</script>
-
-</body>
-</html> 
+  init_page(false);
+  process_input(ag_text, "");
+/*})(document.firstChild.textContent); */
