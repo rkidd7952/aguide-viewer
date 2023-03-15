@@ -3,7 +3,41 @@
 <meta charset="iso-8859-1" />
 <head>
   <title>aguide-js</title>
-  <style>
+</head>
+<body>
+
+<script>
+  function main()
+  {
+      init_page(true);
+
+      let params = new URLSearchParams(window.location.search);
+      let guideEnc = params.get("guide");
+      if(guideEnc) {
+          let guide = decodeURI(guideEnc);
+          console.log("guide = " + guide)
+          if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0) {
+              let xhr = new XMLHttpRequest();
+              xhr.open("GET", guide);
+              xhr.responseType = "blob";
+              xhr.onload = () => {
+                  process_input(xhr.response);
+              };
+              xhr.send();
+          }
+      } else {
+          const inputElement = document.getElementById("open-file");
+          inputElement.addEventListener("change", read_input, false);
+          inputElement.click();
+      }
+
+      addEventListener("popstate", handle_popstate);
+      addEventListener("hashchange", display_node_hash);
+  }
+
+  function init_page(show_open)
+  {
+      style_text = `
     body {
         background-color: #d0d0d0;
     }
@@ -81,14 +115,9 @@
     }
 
     .button {
-        /* border: 1px solid black; */
-        /* display: inline-block; */
-        /* padding: 6px 12px; */
-        /* cursor: pointer;         */
     }
 
     div.toolbar {
-        /* overflow: hidden; */
         position: fixed;
         background-color: #d0d0d0;
         width: 100%;
@@ -96,24 +125,31 @@
         top: 0;
         left: 0;
         padding: .5em;
-        /* height: 20px; */
-        /* border: 1px solid black; */
     }
 
     div.aguide {
-        /* overflow: auto; */
         padding-top: 2em;
     }
+`;
 
-  </style>
-</head>
-<body>
+      let s = document.createElement("style");
+      s.innerText = style_text;
+      document.head.append(s);
 
-<div>
+      let b = document.getElementsByTagName("body");
+      let body = null;
+
+      if(b.length > 1) {
+          body = b[0];
+      } else {
+          body = document.createElement("body");
+          document.body = body;
+      }
+      
+      body.innerHTML = `<div>
   <div class="toolbar">
-    <!-- <label for="open-file" class="open-file button">Open</label> -->
-    <input type="file" id="open-file"/>
-    <button type="button" class="button" onclick="document.getElementById(&quot;open-file&quot;).click();">Open File...</button>
+    <input type="file" id="open-file"/>` +
+          (show_open ? `<button type="button" class="button" onclick="document.getElementById(&quot;open-file&quot;).click();">Open File...</button>` : ``) + `
     <button type="button" class="button" id="button-contents" disabled="true">Contents</button>
     <button type="button" class="button" id="button-index" disabled="true">Index</button>
     <button type="button" class="button" id="button-help" disabled="true">Help</button>
@@ -123,35 +159,8 @@
   </div>
 
   <div id="aguide" class="aguide">
-    <p id="demo"></p>
   </div>
-</div>
-
-<script>
-  function main()
-  {
-      let params = new URLSearchParams(window.location.search);
-      let guideEnc = params.get("guide");
-      if(guideEnc) {
-          let guide = decodeURI(guideEnc);
-          console.log("guide = " + guide)
-          if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0) {
-              let xhr = new XMLHttpRequest();
-              xhr.open("GET", guide);
-              xhr.responseType = "blob";
-              xhr.onload = () => {
-                  process_input(xhr.response);
-              };
-              xhr.send();
-          }
-      } else {
-          const inputElement = document.getElementById("open-file");
-          inputElement.addEventListener("change", read_input, false);
-          inputElement.click();
-      }
-
-      addEventListener("popstate", handle_popstate);
-      addEventListener("hashchange", display_node_hash);
+</div>`;
   }
 
   function handle_popstate(event)
