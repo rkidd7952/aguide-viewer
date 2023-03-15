@@ -30,9 +30,6 @@
           inputElement.addEventListener("change", read_input, false);
           inputElement.click();
       }
-
-      addEventListener("popstate", handle_popstate);
-      addEventListener("hashchange", display_node_hash);
   }
 
   function init_page(show_open)
@@ -161,6 +158,9 @@
   <div id="aguide" class="aguide">
   </div>
 </div>`;
+
+      addEventListener("popstate", handle_popstate);
+      addEventListener("hashchange", display_node_hash);
   }
 
   function handle_popstate(event)
@@ -195,12 +195,10 @@
   {
       let ps = new_tbuf(text);
       AG = parse_aguide(ps);
-      AG.filename = filename;
-
-      let aguide_div = document.getElementById("aguide");
-      aguide_div.addEventListener("onload", () => {alert("onload")});
-      
-      if(!AG) {
+      if(AG) {
+          AG.filename = filename;
+      } else {
+          let aguide_div = document.getElementById("aguide");
           aguide_div.innerText = text;
           return;
       }
