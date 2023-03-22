@@ -28,10 +28,6 @@ javascript:/*(function(ag_text){ */
   function init_page(show_open)
   {
       style_text = `
-    body {
-        background-color: #d0d0d0;
-    }
-
     .b {
         font-weight: bold;
     }
@@ -45,59 +41,59 @@ javascript:/*(function(ag_text){ */
     }
 
     .fg_text {
-        color: black;
+        color: #000000;
     }
 
     .fg_shine {
-        color: white;
+        color: #ffffff;
     }
 
     .fg_shadow {
-        color: gray;
+        color: #000000;
     }
 
     .fg_fill {
-        color: gray;
+        color: #6688bb;
     }
 
     .fg_filltext {
-        color: black;
+        color: #000000;
     }
 
     .fg_back {
-        color: #d0d0d0;
+        color: #aaaaaa;
     }
 
     .fg_highlight {
-        color: white;
+        color: #ffffff;
     }
 
     .bg_text {
-        background-color: black;
+        background-color: #000000;
     }
 
     .bg_shine {
-        background-color: white;
+        background-color: #ffffff;
     }
 
     .bg_shadow {
-        background-color: gray;
+        background-color: #000000;
     }
 
     .bg_fill {
-        background-color: gray;
+        background-color: #6688bb;
     }
 
     .bg_filltext {
-        background-color: black;
+        background-color: #000000;
     }
 
-    .bg_back {
-        background-color: #d0d0d0;
+    div.toolbar, body, .bg_back {
+        background-color: #aaaaaa;
     }
 
     .bg_highlight {
-        background-color: white;
+        background-color: #ffffff;
     }
 
     input[type="file"] {
@@ -109,7 +105,6 @@ javascript:/*(function(ag_text){ */
 
     div.toolbar {
         position: fixed;
-        background-color: #d0d0d0;
         width: 100%;
         height: 1.5em;
         top: 0;
@@ -125,6 +120,8 @@ javascript:/*(function(ag_text){ */
       let s = document.createElement("style");
       s.innerText = style_text;
       document.head.append(s);
+
+      document.head.innerHTML += "<meta charset=\"ISO-8859-1\" \>";
 
       let b = document.getElementsByTagName("body");
       let body = null;
