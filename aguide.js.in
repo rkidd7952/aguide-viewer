@@ -1,28 +1,3 @@
-function main()
-{
-    init_page(true);
-
-    let params = new URLSearchParams(window.location.search);
-    let guideEnc = params.get("guide");
-    if(guideEnc) {
-        let guide = decodeURI(guideEnc);
-        console.log("guide = " + guide);
-        if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0) {
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", guide);
-            xhr.responseType = "blob";
-            xhr.onload = () => {
-                process_input(xhr.response);
-            };
-            xhr.send();
-        }
-    } else {
-        const inputElement = document.getElementById("open-file");
-        inputElement.addEventListener("change", read_input, false);
-        inputElement.click();
-    }
-}
-
 function init_page(show_open)
 {
     style_text = `
@@ -741,5 +716,3 @@ function str_strip_quote(s)
     return str_translate(s, [{from: /^"/g, to: ""},
                              {from: /"$/g, to: ""}]);
 }
-
-main();

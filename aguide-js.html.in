@@ -7,7 +7,34 @@
 <body>
 
 <script>
+  function main()
+  {
+      init_page(true);
+
+      let params = new URLSearchParams(window.location.search);
+      let guideEnc = params.get("guide");
+      if(guideEnc) {
+          let guide = decodeURI(guideEnc);
+          console.log("guide = " + guide);
+          if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0) {
+              let xhr = new XMLHttpRequest();
+              xhr.open("GET", guide);
+              xhr.responseType = "blob";
+              xhr.onload = () => {
+                  process_input(xhr.response);
+              };
+              xhr.send();
+          }
+      } else {
+          const inputElement = document.getElementById("open-file");
+          inputElement.addEventListener("change", read_input, false);
+          inputElement.click();
+      }
+  }
+
   include({{{aguide.js}}})
+
+  main();
 </script>
 
 </body>
