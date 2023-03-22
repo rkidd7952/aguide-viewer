@@ -1,0 +1,104 @@
+a.ag {
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    text-decoration: none;
+    line-height: 1.4;
+    display: inline-block;
+}
+
+a.ag:active {
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.b {
+    font-weight: bold;
+}
+
+.i {
+    font-style: italic;
+}
+
+.u {
+    text-decoration-line: underline;
+}
+
+a.ag, .fg_text {
+    color: #000000;
+}
+
+.fg_shine {
+    color: #ffffff;
+}
+
+.fg_shadow {
+    color: #000000;
+}
+
+.fg_fill {
+    color: #6688bb;
+}
+
+a.ag:active, .fg_filltext {
+    color: #000000;
+}
+
+.fg_back {
+    color: #aaaaaa;
+}
+
+.fg_highlight {
+    color: #ffffff;
+}
+
+.bg_text {
+    background-color: #000000;
+}
+
+.bg_shine {
+    background-color: #ffffff;
+}
+
+.bg_shadow {
+    background-color: #000000;
+}
+
+a.ag:active, .bg_fill {
+    background-color: #6688bb;
+}
+
+.bg_filltext {
+    background-color: #000000;
+}
+
+div.toolbar, body, .bg_back {
+    background-color: #aaaaaa;
+}
+
+.bg_highlight {
+    background-color: #ffffff;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.button {
+}
+
+div.toolbar {
+    position: fixed;
+    width: 100%;
+    height: 1.5em;
+    top: 0;
+    left: 0;
+    padding: .5em;
+}
+
+div.aguide {
+    padding-top: 2em;
+}

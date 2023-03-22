@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<meta charset="ISO-8859-1" />
+<head>
+  <title>aguide-js</title>
+</head>
+<body>
+
+<script>
+  include({{{aguide.js}}})
+</script>
+
+</body>
+</html> 
