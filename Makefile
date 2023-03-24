@@ -1,6 +1,6 @@
 M4FLAGS=-d --debugfile=debug.txt
 
-all: aguide-js.html ag-bookmark.js
+all: aguide-js.html
 
 aguide.js: aguide.css
 aguide-js.html: aguide.js aguide_escaped.js
@@ -9,8 +9,8 @@ ag-bookmark.js: aguide.js
 aguide_escaped.js: aguide.js
 	sed -e 's/\([\`]\)/\\\1/g' < $< > $@
 
-%: %.in macros.m4
-	m4 $(M4FLAGS) macros.m4 $< > $@
+%: %.in
+	sed -f do_include.sed < $< > $@
 
 clean:
 	rm -f aguide.js

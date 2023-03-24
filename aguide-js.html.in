@@ -48,7 +48,8 @@
       const aguide_js = `
 let ag_text = document.firstChild.textContent;
 __INCLUDE__({{{aguide_escaped.js}}});
-init_page(false);
+init_page(false)
+;
 process_input(ag_text, "");
 `;
       a_e.href = "javascript:" + aguide_js;
