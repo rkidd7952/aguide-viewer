@@ -2,8 +2,4 @@ divert(-1)
 changequote(`{{{',`}}}')
 define({{{__INCLUDE__}}},defn({{{include}}}))
 undefine({{{include}}})
-define({{{__IFDEF__}}},defn({{{ifdef}}}))
-undefine({{{ifdef}}})
-define({{{__PATSUBST__}}},defn({{{patsubst}}}))
-undefine({{{patsubst}}})
 divert(0)dnl
