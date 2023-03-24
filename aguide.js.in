@@ -1,7 +1,7 @@
 function init_page(show_open)
 {
     style_text = `
-include({{{aguide.css}}})
+__INCLUDE__({{{aguide.css}}})
 `;
 
     let s = document.createElement("style");
@@ -19,7 +19,7 @@ include({{{aguide.css}}})
     }
     
     body.innerHTML = `<div>
-  <div class="toolbar">` +
+  <div class="toolbar" id="toolbar">` +
         (show_open ? `<input type="file" id="open-file"/><button type="button" class="button" onclick="document.getElementById(&quot;open-file&quot;).click();">Open File...</button>` : ``) + `
     <button type="button" class="button" id="button-contents" disabled="true">Contents</button>
     <button type="button" class="button" id="button-index" disabled="true">Index</button>
@@ -148,7 +148,7 @@ function parse_aguide(ps)
 }
 
 /* Create a new aguide struct and parse the initial
- * `@database <name>` command */
+ * '@database <name>' command */
 function new_aguide(ps)
 {
     let token = get_next_token(ps, false);
@@ -337,7 +337,7 @@ function get_title(aguide, node)
     return aguide.database;
 }
 
-/* Display node `name`, rendering to div with id 'aguide' */
+/* Display node 'name', rendering to div with id 'aguide' */
 function display_node(name)
 {
     let n = find_node(AG, name);
