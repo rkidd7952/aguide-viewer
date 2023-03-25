@@ -91,7 +91,6 @@ function process_input(text, filename)
 
     if(AG.index) {
         document.getElementById("button-index").disabled = false;
-        index_button.disabled = false;
     }
 
     set_button_link(document.getElementById("button-contents"),
@@ -521,6 +520,25 @@ function render_link(ps, link_text)
         if(m) {
             let file = m[1];
             let node = m[2];
+            
+            link = file;
+
+            let sp = new URLSearchParams(window.location.search);
+            let cur_parent_ref = sp.get("parent_ref");
+            if(cur_parent_ref) {
+                link = decodeURI(cur_parent_ref) + "/" + link;
+            }
+
+            let file_split = file.split("/");
+            if(file_split.length > 1) {
+                let dirs_split = file_split.slice(0, -1);
+                let parent_split = dirs_split.map(() => { return ".." });
+                let next_parent_ref = parent_split.join("/");
+                if(next_parent_ref.length > 0) {
+                    link += "?parent_ref=" + encodeURI(next_parent_ref);
+                }
+            }
+            link += "#" + node;
         } else {
             link = "#" + encodeURI(name);
         }
@@ -532,8 +550,6 @@ function render_link(ps, link_text)
         a.innerHTML = link_text;
         a.style = "width: " + link_text_len + "em;";
         return a.outerHTML;
-        
-        /* return "<a class=\"ag\" href=\"" + link + "\" onclick=\"handle_click_link();\">" + link_text + "</a>"; */
     }
 
     return null;
