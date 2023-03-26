@@ -1,0 +1,6 @@
+let ag_text = document.firstChild.textContent;
+__INCLUDE__({{{aguide.js}}})
+if(is_aguide(ag_text)) {
+    init_page(false);
+    process_input(ag_text, "");
+}

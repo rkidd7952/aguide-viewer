@@ -24,7 +24,7 @@ __INCLUDE__({{{aguide.css}}})
     <button type="button" class="button" id="button-contents" disabled="true">Contents</button>
     <button type="button" class="button" id="button-index" disabled="true">Index</button>
     <button type="button" class="button" id="button-help" disabled="true">Help</button>
-    <button type="button" class="button" id="button-retrace" disabled="true" onclick="history.back()">Retrace</button>
+    <button type="button" class="button" id="button-retrace" disabled="true" onclick="history.go(-1)">Retrace</button>
     <button type="button" class="button" id="button-browse-prev" disabled="true">Browse &lt;</button>
     <button type="button" class="button" id="button-browse-next" disabled="true">Browse &gt;</button>
   </div>
@@ -64,6 +64,11 @@ function read_input()
 }
 
 var AG = null;
+
+function is_aguide(text)
+{
+    return new_aguide(new_tbuf(text)) !== null;
+}
 
 function process_input(text, filename)
 {

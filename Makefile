@@ -1,10 +1,9 @@
-M4FLAGS=-d --debugfile=debug.txt
-
-all: aguide-js.html
+all: aguide-js.html agview.js
 
 aguide.js: aguide.css
 aguide-js.html: aguide.js aguide_escaped.js
 ag-bookmark.js: aguide.js
+agview.js: aguide.js
 
 aguide_escaped.js: aguide.js
 	sed -e 's/\([\`]\)/\\\1/g' < $< > $@
