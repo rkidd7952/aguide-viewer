@@ -1,4 +1,4 @@
-a.ag {
+a.ag, .button {
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;
     border-right: 2px solid #000000;
@@ -8,7 +8,7 @@ a.ag {
     display: inline-block;
 }
 
-a.ag:active {
+a.ag:active, .button:active {
     border-top: 2px solid #000000;
     border-left: 2px solid #000000;
     border-right: 2px solid #ffffff;
@@ -67,7 +67,7 @@ a.ag:active, .fg_filltext {
     background-color: #000000;
 }
 
-a.ag:active, .bg_fill {
+a.ag:active, .button:active, .bg_fill {
     background-color: #6688bb;
 }
 
@@ -75,7 +75,7 @@ a.ag:active, .bg_fill {
     background-color: #000000;
 }
 
-div.toolbar, body, .bg_back {
+div.toolbar, body, .bg_back, .button {
     background-color: #aaaaaa;
 }
 
@@ -85,9 +85,6 @@ div.toolbar, body, .bg_back {
 
 input[type="file"] {
     display: none;
-}
-
-.button {
 }
 
 div.toolbar {
