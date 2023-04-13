@@ -1,4 +1,8 @@
-a.ag, .button {
+body {
+    font-family: monospace;
+}
+
+a.ag, .button, input.checkbox {
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;
     border-right: 2px solid #000000;
@@ -8,7 +12,7 @@ a.ag, .button {
     display: inline-block;
 }
 
-a.ag:active, .button:active {
+a.ag:active, .button:active, input.checkbox:active {
     border-top: 2px solid #000000;
     border-left: 2px solid #000000;
     border-right: 2px solid #ffffff;
@@ -67,7 +71,7 @@ a.ag:active, .fg_filltext {
     background-color: #000000;
 }
 
-a.ag:active, .button:active, .bg_fill {
+a.ag:active, .button:active, input.checkbox:active, .bg_fill {
     background-color: #6688bb;
 }
 
@@ -75,7 +79,7 @@ a.ag:active, .button:active, .bg_fill {
     background-color: #000000;
 }
 
-div.toolbar, body, .bg_back, .button {
+div.toolbar, body, .bg_back, .button, input.checkbox {
     background-color: #aaaaaa;
 }
 
