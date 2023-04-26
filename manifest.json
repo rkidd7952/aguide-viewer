@@ -5,11 +5,21 @@
 
   "description": "Viewer for AmigaGuide documents",
 
-  "content_scripts": [
-    {
-      "matches": ["*://*/*.guide", "file:///*.guide"],
-      "js": ["agview.js"]
-    }
-  ]
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
 
+  "content_security_policy": "script-src 'self'; object-src 'self';",
+
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
+
+  "web_accessible_resources": [
+    "aguide-js.html"
+  ]
 }

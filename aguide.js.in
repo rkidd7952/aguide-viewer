@@ -20,11 +20,11 @@ __INCLUDE__({{{aguide.css}}})
     
     body.innerHTML = `<div>
   <div class="toolbar" id="toolbar">` +
-        (show_open ? `<input type="file" id="open-file"/><button type="button" class="button" onclick="document.getElementById(&quot;open-file&quot;).click();">Open File...</button>` : ``) + `
+        (show_open ? `<input type="file" id="open-file"/><button type="button" class="button" id="button-open">Open File...</button>` : ``) + `
     <button type="button" class="button" id="button-contents" disabled="true">Contents</button>
     <button type="button" class="button" id="button-index" disabled="true">Index</button>
     <button type="button" class="button" id="button-help" disabled="true">Help</button>
-    <button type="button" class="button" id="button-retrace" disabled="true" onclick="history.go(-1)">Retrace</button>
+    <button type="button" class="button" id="button-retrace" disabled="true">Retrace</button>
     <button type="button" class="button" id="button-browse-prev" disabled="true">Browse &lt;</button>
     <button type="button" class="button" id="button-browse-next" disabled="true">Browse &gt;</button>
     &nbsp;|&nbsp;
@@ -34,6 +34,17 @@ __INCLUDE__({{{aguide.css}}})
   <div id="aguide" class="aguide">
   </div>
 </div>`;
+
+    document.getElementById("open-file").addEventListener(
+        "change", read_input, false);
+
+    document.getElementById("button-open").onclick = () => {
+        document.getElementById("open-file").click();
+    };
+
+    document.getElementById("button-retrace").onclick = () => {
+        history.go(-1);
+    };
 
     document.getElementById("fixed-width-font").onclick = () => {
         var cb = document.getElementById("fixed-width-font");

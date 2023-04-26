@@ -1,0 +1,49 @@
+function main()
+{
+    init_page(true);
+    add_bookmarklet();
+
+    let params = new URLSearchParams(window.location.search);
+    let guideEnc = params.get("guide");
+    if(guideEnc) {
+        let guide = decodeURI(guideEnc);
+        console.log("guide = " + guide);
+        if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", guide);
+            xhr.responseType = "blob";
+            xhr.onload = async () => {
+                const text = await xhr.response.text();
+                process_input(text);
+            };
+            xhr.send();
+        }
+    } else {
+        const inputElement = document.getElementById("open-file");
+        inputElement.addEventListener("change", read_input, false);
+        inputElement.click();
+    }
+}
+
+function add_bookmarklet()
+{
+    let toolbar_e = document.getElementById("toolbar");
+    let span_e = document.createElement("span");
+    span_e.className = "bookmarklet";
+    let a_e = document.createElement("a");
+    const aguide_js = `
+let ag_text = document.firstChild.textContent;
+__INCLUDE__({{{aguide_escaped.js}}});
+init_page(false)
+;
+process_input(ag_text, "");
+`;
+    a_e.href = "javascript:" + aguide_js;
+    a_e.innerHTML = "Bookmarklet";
+    span_e.append(a_e);
+    toolbar_e.append(span_e);
+}
+
+__INCLUDE__({{{aguide.js}}})
+
+main();

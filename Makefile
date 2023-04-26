@@ -1,7 +1,8 @@
 all: aguide-js.html agview.js
 
 aguide.js: aguide.css
-aguide-js.html: aguide.js aguide_escaped.js
+aguide2.js: aguide.js  aguide_escaped.js
+aguide-js.html: aguide2.js
 ag-bookmark.js: aguide.js
 agview.js: aguide.js
 

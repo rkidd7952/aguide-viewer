@@ -4,3 +4,8 @@ file:///home/rkidd/Documents/programming/aguide-js/aguide-js.html?guide=http%3A/
 
 
 file:///home/rkidd/Documents/programming/aguide-js/aguide-js.html?guide=file:///home/rkidd/Documents/Reference/amiga/ADCD_2.1/Contributions/Haage_%5C%26_Partner/Storm-Projects/NDKExamples2/AmigaGuide/AG_V39/Sample.guide
+
+
+* See djvujs extension
+ - Extension code is public domain/unlicense
+   https://github.com/RussCoder/djvujs/tree/master/extension
