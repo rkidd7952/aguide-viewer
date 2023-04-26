@@ -5,6 +5,8 @@ function main()
 
     let params = new URLSearchParams(window.location.search);
     let guideEnc = params.get("guide");
+    let aguide_text = params.get("aguide_text");
+    let storage_name_enc = params.get("storage");
     if(guideEnc) {
         let guide = decodeURI(guideEnc);
         console.log("guide = " + guide);
@@ -18,6 +20,21 @@ function main()
             };
             xhr.send();
         }
+    } else if(aguide_text) {
+        process_input(decodeURI(aguide_text), "");
+    } else if(storage_name_enc) {
+        const storage_name = decodeURI(storage_name_enc);
+        // const text = window.localStorage.getItem(storage_name);
+        browser.runtime.sendMessage({method: "getGuideText"}, function(resp) {
+            const text = resp.text;
+            if(!text || text === "") {
+                console.log("Couldn't read local storage name = " + storage_name);
+                return;
+            } else {
+                console.log("got local storage: " + text);
+            }
+            process_input(text, "");
+        });
     } else {
         const inputElement = document.getElementById("open-file");
         inputElement.addEventListener("change", read_input, false);
