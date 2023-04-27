@@ -1,0 +1,19 @@
+function add_bookmarklet()
+{
+    let toolbar_e = document.getElementById("toolbar");
+    let span_e = document.createElement("span");
+    span_e.className = "bookmarklet";
+    let a_e = document.createElement("a");
+    const aguide_js = `
+let ag_text = document.firstChild.textContent;
+__INCLUDE__({{{aguide_escaped.js}}});
+init_page(false)
+;
+process_input(ag_text, "");
+`;
+    a_e.href = "javascript:" + aguide_js;
+    a_e.innerHTML = "Bookmarklet";
+    span_e.append(a_e);
+    toolbar_e.append(span_e);
+}
+
