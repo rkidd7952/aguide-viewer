@@ -5,8 +5,13 @@
 
         const storage_name = "guidetext";
         // localStorage.setItem(storage_name, document.firstChild.textContent);
-        browser.runtime.sendMessage({method: "setGuideText", body: document.firstChild.textContent}, function(resp) {
+        browser.runtime.sendMessage({
+            method: "setGuideText",
+            body: document.firstChild.textContent,
+            encoding: document.inputEncoding
+        }, function(resp) {
             console.log("wrote local storage: value = " + document.firstChild.textContent);
+            console.log("encoding = " + document.inputEncoding);
             const aguide_url = browser.runtime.getURL("aguide-js.html");
             const p = new URLSearchParams();
             // storage is a flag telling the viewer to read from local storage.

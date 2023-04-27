@@ -23,8 +23,8 @@ function main()
         const storage_name = decodeURI(storage_name_enc);
         // const text = window.localStorage.getItem(storage_name);
         browser.runtime.sendMessage({method: "getGuideText"}, function(resp) {
-            const file = new File([resp.text], "tmp.txt", {type: "application/octet-stream"});
-            read_input_file(file);
+            const file = new File([resp.body], "tmp.txt", {type: "application/octet-stream"});
+            read_input_file(file, resp.encoding);
             // let reader = new FileReader();
             // reader.addEventListener("load", () => { process_input(reader.result, file.name); }, false);
             // reader.readAsBinaryString(file);
@@ -118,16 +118,19 @@ function handle_click_link(event)
 function read_input()
 {
     const file = this.files.item(0);
-    read_input_file(file);
+    read_input_file(file, "");
 }
 
-function read_input_file(file)
+function read_input_file(file, encoding)
 {
     let reader = new FileReader();
-    reader.addEventListener("load", () => { process_input(reader.result, file.name); },
+    reader.addEventListener("load", () => { process_input(reader.result, file.name, encoding); },
                             false);
-    reader.readAsBinaryString(file);
-    // reader.readAsText(file, "ISO-8859-1");
+    if(!encoding || encoding === "") {
+        reader.readAsBinaryString(file);
+    } else {
+        reader.readAsText(file);
+    }
 }
 
 var AG = null;
@@ -137,8 +140,11 @@ function is_aguide(text)
     return new_aguide(new_tbuf(text)) !== null;
 }
 
-function process_input(text, filename)
+function process_input(text, filename, encoding)
 {
+    let transcoded = transcode_charset(text, encoding, 'iso-8859-1');
+    text = transcoded;
+
     let ps = new_tbuf(text);
     AG = parse_aguide(ps);
     if(AG) {
@@ -803,6 +809,36 @@ function str_strip_quote(s)
 {
     return str_translate(s, [{from: /^"/g, to: ""},
                              {from: /"$/g, to: ""}]);
+}
+
+/* text: utf-8 that was decoded as src_encoding
+ * returns utf-8 decoded as dst_decoding
+ * Build a 256 entry map mapping utf-8 => src_encoding.
+ * Use map to construct original byte sequence
+ * Decode original byte sequence as dst_encoding.
+ */
+function transcode_charset(text, src_encoding, dst_encoding)
+{
+    let utf_8_to_src = {};
+
+    let dec = new TextDecoder(src_encoding);
+    const ab = new ArrayBuffer(1);
+    let dv = new DataView(ab);
+    for(let i = 0; i < 256; ++i) {
+        dv.setUint8(0, i);
+        let utf_8 = dec.decode(dv);
+        utf_8_to_src[utf_8[0]] = i;
+    }
+
+    const orig_text = new ArrayBuffer(text.length);
+    dv = new DataView(orig_text);
+    for(let i = 0; i < text.length; ++i) {
+        const orig_char = utf_8_to_src[text[i]];
+        dv.setUint8(i, orig_char);
+    }
+
+    dec = new TextDecoder(dst_encoding);
+    return dec.decode(dv);
 }
 
 main();
