@@ -80,10 +80,16 @@ function handle_click_link(event)
 function read_input()
 {
     const file = this.files.item(0);
+    read_input_file(file);
+}
+
+function read_input_file(file)
+{
     let reader = new FileReader();
     reader.addEventListener("load", () => { process_input(reader.result, file.name); },
                             false);
-    reader.readAsText(file);
+    reader.readAsBinaryString(file);
+    // reader.readAsText(file, "ISO-8859-1");
 }
 
 var AG = null;
