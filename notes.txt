@@ -9,3 +9,13 @@ file:///home/rkidd/Documents/programming/aguide-js/aguide-js.html?guide=file:///
 * See djvujs extension
  - Extension code is public domain/unlicense
    https://github.com/RussCoder/djvujs/tree/master/extension
+
+
+* Three ways to open file
+ - Specify http[s]:// URL
+   - onBeforeRequest handler in background.js
+ - Specify file:/// URL
+   - onBeforeRequest doesn't catch these.  Content script scan.js
+     detects @database
+ - Upload using open-file button
+   - Direct entry to aguide-js.html / aguide.js
