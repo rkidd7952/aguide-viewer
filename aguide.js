@@ -1,13 +1,51 @@
+function main()
+{
+    init_page(true);
+    // add_bookmarklet();
+
+    let params = new URLSearchParams(window.location.search);
+    let guideEnc = params.get("guide");
+    let storage_name_enc = params.get("storage");
+    if(guideEnc) {
+        let guide = decodeURI(guideEnc);
+        console.log("guide = " + guide);
+        if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", guide);
+            xhr.responseType = "blob";
+            xhr.onload = async () => {
+                const text = await xhr.response.arrayBuffer();
+                process_input(text);
+            };
+            xhr.send();
+        }
+    } else if(storage_name_enc) {
+        const storage_name = decodeURI(storage_name_enc);
+        // const text = window.localStorage.getItem(storage_name);
+        browser.runtime.sendMessage({method: "getGuideText"}, function(resp) {
+            const file = new File([resp.text], "tmp.txt", {type: "application/octet-stream"});
+            read_input_file(file);
+            // let reader = new FileReader();
+            // reader.addEventListener("load", () => { process_input(reader.result, file.name); }, false);
+            // reader.readAsBinaryString(file);
+            // const text = await blob.arrayBuffer();
+            // if(!text || text === "") {
+            //     console.log("Couldn't read local storage name = " + storage_name);
+            //     return;
+            // } else {
+            //     console.log("got local storage: " + text);
+            // }
+            // process_input(text, "");
+        });
+    } else {
+        // const inputElement = document.getElementById("open-file");
+        // inputElement.addEventListener("change", read_input, false);
+        // inputElement.click();
+    }
+}
+
 function init_page(show_open)
 {
-    style_text = `
-__INCLUDE__({{{aguide.css}}})
-`;
-
-    let s = document.createElement("style");
-    s.innerText = style_text;
-    document.head.append(s);
-    
     let b = document.getElementsByTagName("body");
     let body = null;
 
@@ -766,3 +804,5 @@ function str_strip_quote(s)
     return str_translate(s, [{from: /^"/g, to: ""},
                              {from: /"$/g, to: ""}]);
 }
+
+main();
