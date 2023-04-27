@@ -1,6 +1,6 @@
 all: build/aguide-js.html build/agview.js extension
 
-extension: build/scan.js build/background.js build/manifest.json
+extension: build/scan.js build/background.js build/manifest.json build/icon32x32.png
 
 build/aguide.js: aguide.css
 build/aguide2.js: build/aguide.js build/aguide_escaped.js
