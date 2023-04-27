@@ -1,21 +1,25 @@
-all: aguide-js.html agview.js
+all: build/aguide-js.html build/agview.js extension
 
-aguide.js: aguide.css
-aguide2.js: aguide.js  aguide_escaped.js
-aguide-js.html: aguide2.js
-ag-bookmark.js: aguide.js
-agview.js: aguide.js
+extension: build/scan.js build/background.js build/manifest.json
 
-aguide_escaped.js: aguide.js
+build/aguide.js: aguide.css
+build/aguide2.js: build/aguide.js build/aguide_escaped.js
+build/aguide-js.html: build/aguide2.js
+build/ag-bookmarfk.js: build/aguide.js
+build/agview.js: build/aguide.js
+
+build/aguide_escaped.js: build/aguide.js
 	sed -e 's/\([\`]\)/\\\1/g' < $< > $@
 
-%: %.in
+build/%: %.in
+	mkdir -p build
 	sed -f do_include.sed < $< > $@
 
+build/%: %
+	mkdir -p build
+	cp $< $@
+
 clean:
-	rm -f aguide.js
-	rm -f aguide-js.html
-	rm -f ag-bookmark.js
-	rm -f aguide_escaped.js
+	rm -rf build
 
 .PHONY: clean

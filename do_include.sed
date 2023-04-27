@@ -1,5 +1,5 @@
 /__INCLUDE__({{{aguide.js}}})/ {
-        r aguide.js
+        r build/aguide.js
         d
 }
 /__INCLUDE__({{{aguide.css}}})/ {
@@ -7,6 +7,6 @@
         d
 }
 /__INCLUDE__({{{aguide_escaped.js}}})/ {
-        r aguide_escaped.js
+        r build/aguide_escaped.js
         d
 }
