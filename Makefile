@@ -1,25 +1,9 @@
-all: build/aguide-js.html extension
+all: aguide.xpi
 
-extension: build/scan.js build/background.js build/manifest.json build/icon32x32.png build/aguide.css
-
-# build/aguide.js: aguide.css
-build/aguide2.js: build/aguide.js build/aguide_escaped.js
-build/aguide-js.html: build/aguide.js
-build/ag-bookmarfk.js: build/aguide.js
-# build/agview.js: build/aguide.js
-
-build/aguide_escaped.js: build/aguide.js
-	sed -e 's/\([\`]\)/\\\1/g' < $< > $@
-
-build/%: %.in
-	mkdir -p build
-	sed -f do_include.sed < $< > $@
-
-build/%: %
-	mkdir -p build
-	cp $< $@
+aguide.xpi: aguide-js.html aguide.js scan.js background.js manifest.json icon32x32.png aguide.css
+	zip $@ $^
 
 clean:
-	rm -rf build
+	rm -f aguide.xpi
 
 .PHONY: clean
