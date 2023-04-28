@@ -1,7 +1,6 @@
 function main()
 {
     init_page(true);
-    // add_bookmarklet();
 
     let params = new URLSearchParams(window.location.search);
     let guideEnc = params.get("guide");
@@ -14,33 +13,21 @@ function main()
             xhr.open("GET", guide);
             xhr.responseType = "blob";
             xhr.onload = async () => {
-                const text = await xhr.response.arrayBuffer();
-                process_input(text);
+                const file = new File([xhr.response], "tmp.txt", {type: "application/octet-stream"});
+                read_input_file(file, "");
             };
             xhr.send();
         }
     } else if(storage_name_enc) {
+        if(typeof browser === "undefined") {
+            var browser = chrome;
+        }
+
         const storage_name = decodeURI(storage_name_enc);
-        // const text = window.localStorage.getItem(storage_name);
         browser.runtime.sendMessage({method: "getGuideText"}, function(resp) {
             const file = new File([resp.body], "tmp.txt", {type: "application/octet-stream"});
             read_input_file(file, resp.encoding);
-            // let reader = new FileReader();
-            // reader.addEventListener("load", () => { process_input(reader.result, file.name); }, false);
-            // reader.readAsBinaryString(file);
-            // const text = await blob.arrayBuffer();
-            // if(!text || text === "") {
-            //     console.log("Couldn't read local storage name = " + storage_name);
-            //     return;
-            // } else {
-            //     console.log("got local storage: " + text);
-            // }
-            // process_input(text, "");
         });
-    } else {
-        // const inputElement = document.getElementById("open-file");
-        // inputElement.addEventListener("change", read_input, false);
-        // inputElement.click();
     }
 }
 
@@ -142,8 +129,10 @@ function is_aguide(text)
 
 function process_input(text, filename, encoding)
 {
-    let transcoded = transcode_charset(text, encoding, 'iso-8859-1');
-    text = transcoded;
+    if(encoding && encoding != "") {
+        let transcoded = transcode_charset(text, encoding, 'iso-8859-1');
+        text = transcoded;
+    }
 
     let ps = new_tbuf(text);
     AG = parse_aguide(ps);
