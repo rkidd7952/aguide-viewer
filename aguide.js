@@ -673,7 +673,7 @@ function new_node_tbuf(aguide, node)
     return new_tbuf(aguide.text.slice(node.start, node.end));
 }
 
-/******* tbuf functions *******/
+/******* token buf functions *******/
 function new_tbuf(text)
 {
     return { text: text, pos: 0 }
