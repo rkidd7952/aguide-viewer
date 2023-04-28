@@ -19,3 +19,14 @@ file:///home/rkidd/Documents/programming/aguide-js/aguide-js.html?guide=file:///
      detects @database
  - Upload using open-file button
    - Direct entry to aguide-js.html / aguide.js
+
+
+moz-extension://4657febd-a9b4-4f91-a468-083a4a771d28/aguide-js.html?storage=guidetext&parent_ref=http%3A%2F%2Flocalhost%3A8080%2F%7Erkidd%2FADCD_2.1
+
+moz-extension://4657febd-a9b4-4f91-a468-083a4a771d28/aguide-js.html?guide=http%3A%2F%2Flocalhost%3A8080%2F%7Erkidd%2FADCD_2.1%2FCD-ROM.guide%3Fparent_ref%3Dhttp%3A%2F%2Flocalhost%3A8080%2F%7Erkidd%2FADCD_2.1%2F%23main
+
+
+moz-extension://2859e9e1-d688-45b4-a7ad-b8edd9865095/aguide-js.html?guide=http%3A%2F%2Flocalhost%3A8080%2F%7Erkidd%2FADCD_2.1%2FCD-ROM.guide%3Fparent_ref%3Dhttp%3A%2F%2Flocalhost%3A8080%2F%7Erkidd%2FADCD_2.1%2F%23
+
+
+moz-extension://2859e9e1-d688-45b4-a7ad-b8edd9865095/aguide-js.html?guide=http%3A%2F%2Flocalhost%3A8080%2F%7Erkidd%2FADCD_2.1%2FGuide%2FCDTV______________.00194.guide%3Fparent_ref%3Dhttp%3A%2F%2Flocalhost%3A8080%2F%7Erkidd%2FADCD_2.1%23

@@ -21,7 +21,7 @@
             p.set("storage", encodeURI(storage_name));
             const parent_ref = window.location.href.split("/").slice(0, -1).join("/");
             p.set("parent_ref", encodeURI(parent_ref));
-            window.location = aguide_url + "?" + p.toString();
+            window.location.replace(aguide_url + "?" + p.toString());
         });
     }
 })();

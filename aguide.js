@@ -31,6 +31,16 @@ function main()
     }
 }
 
+function get_guide_url()
+{
+    let params = new URLSearchParams(window.location.search);
+    let guideEnc = params.get("guide");
+    if(guideEnc) {
+        return new URL(decodeURI(guideEnc));
+    }
+    return new URL(window.location);
+}
+
 function init_page(show_open)
 {
     let b = document.getElementsByTagName("body");
@@ -148,7 +158,7 @@ function process_input(text, filename, encoding)
     t += JSON.stringify(AG.nodes);
     console.info(t);
 
-    let u = new URL(window.location);
+    let u = get_guide_url();
     if(u.hash) {
         u.hash = "#";
         window.location = u.toString();
@@ -375,7 +385,7 @@ function find_node_prev(aguide, name)
 
 function display_node_hash()
 {
-    let u = new URL(window.location);
+    let u = get_guide_url();
     if(u.hash && u.hash[0] === "#") {
         display_node(decodeURI(u.hash.slice(1)))
     } else {
@@ -590,14 +600,17 @@ function render_link(ps, link_text)
             
             link = file;
 
-            let sp = new URLSearchParams(window.location.search);
+            let sp = new URLSearchParams(get_guide_url().search);
             let cur_parent_ref = sp.get("parent_ref");
             if(cur_parent_ref) {
-                link = decodeURI(cur_parent_ref) + "/" + link;
+                cur_parent_ref = decodeURI(cur_parent_ref)
+                link = cur_parent_ref + "/" + link;
             }
 
             let file_split = file.split("/");
-            if(file_split.length > 1) {
+            if(cur_parent_ref) {
+                link += "?parent_ref=" + encodeURI(cur_parent_ref);
+            } else if(file_split.length > 1) {
                 let dirs_split = file_split.slice(0, -1);
                 let parent_split = dirs_split.map(() => { return ".." });
                 let next_parent_ref = parent_split.join("/");
