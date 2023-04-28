@@ -62,8 +62,6 @@ function init_page(show_open)
     <button type="button" class="button" id="button-retrace" disabled="true">Retrace</button>
     <button type="button" class="button" id="button-browse-prev" disabled="true">Browse &lt;</button>
     <button type="button" class="button" id="button-browse-next" disabled="true">Browse &gt;</button>
-    &nbsp;|&nbsp;
-    <input type="checkbox" class="checkbox" id="fixed-width-font" checked="true">Fixed width font</input>
   </div>
 
   <div id="aguide" class="aguide">
@@ -81,15 +79,17 @@ function init_page(show_open)
         history.go(-1);
     };
 
-    document.getElementById("fixed-width-font").onclick = () => {
-        var cb = document.getElementById("fixed-width-font");
-        var b = document.getElementsByTagName("body")[0];
-        if(cb.checked) {
-            b.style.fontFamily = "monospace";
-        } else {
-            b.style.fontFamily = "initial";
-        }
-    };
+    // &nbsp;|&nbsp;
+    // <input type="checkbox" class="checkbox" id="fixed-width-font" checked="true">Fixed width font</input>
+    // document.getElementById("fixed-width-font").onclick = () => {
+    //     var cb = document.getElementById("fixed-width-font");
+    //     var b = document.getElementsByTagName("body")[0];
+    //     if(cb.checked) {
+    //         b.style.fontFamily = "monospace";
+    //     } else {
+    //         b.style.fontFamily = "initial";
+    //     }
+    // };
 
     addEventListener("popstate", handle_popstate);
     addEventListener("hashchange", display_node_hash);
