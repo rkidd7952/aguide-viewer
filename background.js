@@ -32,16 +32,13 @@ function handle_message(request, sender, sendResponse)
     console.log("handling " + request.method);
 
     if(request.method === "getGuideText") {
-        sendResponse(JSON.parse(localStorage.getItem(guideTextKey)));
+        sendResponse(JSON.parse(sessionStorage.getItem(guideTextKey)));
     } else if(request.method === "setGuideText") {
-        // localStorage.setItem(guideTextKey, JSON.stringify(request));
-        console.log("calling setItem");
         try{
-            localStorage.setItem(guideTextKey, JSON.stringify(request));
+            sessionStorage.setItem(guideTextKey, JSON.stringify(request));
         } catch(error) {
             console.log("setItem threw exception: " + error);
         }
-        console.log("called setItem");
         sendResponse({});
     } else {
         sendResponse({});
