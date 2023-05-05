@@ -32,12 +32,20 @@
   ],
 
   "icons": {
-      "32": "icon32x32.png"
+      "16": "icon16x16.png",
+      "32": "icon32x32.png",
+      "48": "icon48x48.png",
+      "64": "icon64x64.png",
+      "96": "icon96x96.png"
   },
 
   "browser_action": {
     "default_icon": {
-      "32": "icon32x32.png"
+        "16": "icon16x16.png",
+        "32": "icon32x32.png",
+        "48": "icon48x48.png",
+        "64": "icon64x64.png",
+        "96": "icon96x96.png"
     }
   }
 }
