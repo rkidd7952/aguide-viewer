@@ -20,5 +20,23 @@ Chromium:
 Limitations
 Links from one AmigaGuide document to another may not work as expected when browsing local files in Firefox.  Firefox blocks direct links to local files from the extension.  To open such a link, right click, open the link in a new tab or window, then reload the new tab to render.
 
+Building / Dependencies
+
+The extension doesn't need to be built to test changes.  Follow the installation procedure above and select manifest.json or the directory that contains manifest.json, depending on browser.
+
+Building the extension bundle requires the following packages.
+ - make
+ - zip
+
+To build the extension bundle
+ % make
+
+Tagging and packaging the extension for distribution requires additional packages.
+ - git
+ - jq (https://stedolan.github.io/jq)
+
+To tag and package for distribution
+ % make dist VERSION=vers
+
 Contact for bugs, patches, etc
 Robert Kidd <robert.kidd@gmail.com>
