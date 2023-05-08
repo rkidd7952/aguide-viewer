@@ -29,7 +29,8 @@ function main()
         let guide = decodeURI(guideEnc);
         console.log("guide = " + guide);
         if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0 ||
-           guide.indexOf("moz-extension") === 0) {
+           guide.indexOf("moz-extension") === 0 ||
+           guide.indexOf("chrome-extension") === 0) {
             let xhr = new XMLHttpRequest();
             xhr.open("GET", guide);
             xhr.responseType = "blob";
@@ -704,6 +705,10 @@ function toggle_about()
 {
     let guide_div = document.getElementById("aguide");
     let about_div = document.getElementById("about");
+
+    if(typeof browser === "undefined") {
+        var browser = chrome;
+    }
 
     if(about_div) {
         guide_div.removeChild(about_div);
