@@ -31,7 +31,7 @@ tag:
 	@test -n "$(VERSION)" || (echo "usage: make tag VERSION=vers" && false)
 	@test -z "`$(GS)`" -o -n "$(DIRTY_OK)" || (echo "Uncommitted changes exist in tree; set DIRTY_OK to bypass" && $(GS))
 	jq -M '.version = "$(VERSION)"' manifest.json > manifest.json.tmp && mv manifest.json.tmp manifest.json
-	git commit -m "Tagging version $(VERSION)" manifest.json
+	test -z "`git diff manifest.json`" || git commit -m "Tagging version $(VERSION)" manifest.json
 	git tag -m "Tagging version $(VERSION)" "v$(VERSION)"
 
 clean:
