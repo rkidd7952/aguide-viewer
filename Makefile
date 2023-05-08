@@ -33,6 +33,7 @@ tag:
 	jq -M '.version = "$(VERSION)"' manifest.json > manifest.json.tmp && mv manifest.json.tmp manifest.json
 	test -z "`git diff manifest.json`" || git commit -m "Tagging version $(VERSION)" manifest.json
 	git tag $(FORCE) -m "Tagging version $(VERSION)" "v$(VERSION)"
+	@echo "*** Push tag with \`git push origin v$(VERSION)\` ***"
 
 clean:
 	-rm -f aguide.xpi
