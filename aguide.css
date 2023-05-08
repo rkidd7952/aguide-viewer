@@ -22,6 +22,26 @@ body {
     font-family: monospace;
 }
 
+.center {
+    text-align: center;
+}
+
+div.about {
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    padding: 10px;
+    width: 50%;
+    height: 50%;
+    z-index: 2147483648;
+    background-color: #aaaaaa;
+    position: fixed;
+    left: 25%;
+    top: 25%;
+    overflow-y: scroll;
+}
+
 a.ag, .button, input.checkbox {
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;

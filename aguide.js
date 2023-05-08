@@ -82,6 +82,7 @@ function init_page(show_open)
     <button type="button" class="button" id="button-retrace" disabled="true">Retrace</button>
     <button type="button" class="button" id="button-browse-prev" disabled="true">Browse &lt;</button>
     <button type="button" class="button" id="button-browse-next" disabled="true">Browse &gt;</button>
+    <button type="button" class="button" id="button-about">About</button>
   </div>
 
   <div id="aguide" class="aguide">
@@ -97,6 +98,10 @@ function init_page(show_open)
 
     document.getElementById("button-retrace").onclick = () => {
         history.go(-1);
+    };
+
+    document.getElementById("button-about").onclick = () => {
+        toggle_about();
     };
 
     // &nbsp;|&nbsp;
@@ -691,6 +696,44 @@ function apply_color(render_state, cmd, color)
 function new_node_tbuf(aguide, node)
 {
     return new_tbuf(aguide.text.slice(node.start, node.end));
+}
+
+function toggle_about()
+{
+    let guide_div = document.getElementById("aguide");
+    let about_div = document.getElementById("about");
+
+    if(about_div) {
+        guide_div.removeChild(about_div);
+        return;
+    }
+
+    let about_html = `<p class="center">AGuide Viewer</p>
+<p class="center">Version ` + browser.runtime.getManifest().version + `</p>
+<p class="center">Copyright 2023 Robert Kidd</p>
+
+<p class="center"><a href="README.guide" target="_blank" class="ag">README.guide</a></p>
+
+<p>AGuide Viewer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+
+<p>AGuide Viewer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+
+<p>You should have received a copy of the GNU General Public License along with AGuide Viewer. If not, see <a href="https://www.gnu.org/licenses/" target="_blank">https://www.gnu.org/licenses/</a>.</p>
+
+<div class="center">
+    <button type="button" class="button" id="button-about-ok">OK</button>
+</div>`;
+
+    about_div = document.createElement("div");
+    about_div.className = "about";
+    about_div.id = "about";
+    about_div.innerHTML = about_html;
+
+    guide_div.appendChild(about_div);
+
+    document.getElementById("button-about-ok").onclick = () => {
+        toggle_about();
+    };
 }
 
 /******* token buf functions *******/
