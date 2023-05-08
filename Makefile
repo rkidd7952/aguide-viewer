@@ -35,6 +35,6 @@ tag:
 	git tag -m "Tagging version $(VERSION)" "v$(VERSION)"
 
 clean:
-	-rm aguide.xpi
+	-rm -f aguide.xpi
 
 .PHONY: clean tag dist
