@@ -23,7 +23,7 @@ if(typeof browser === "undefined") {
 }
 
 const get_aguide_url = (ag_url = null) => {
-    const aguide_url = browser.runtime.getURL("aguide-js.html");
+    const aguide_url = browser.runtime.getURL("aguide.html");
     if(ag_url) {
         const p = new URLSearchParams();
         p.set("guide", encodeURI(ag_url));

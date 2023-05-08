@@ -35,7 +35,7 @@
         }, function(resp) {
             console.log("wrote local storage: value = " + document.firstChild.textContent);
             console.log("encoding = " + document.inputEncoding);
-            const aguide_url = browser.runtime.getURL("aguide-js.html");
+            const aguide_url = browser.runtime.getURL("aguide.html");
             const p = new URLSearchParams();
             // storage is a flag telling the viewer to read from local storage.
             p.set("storage", encodeURI(storage_name));
