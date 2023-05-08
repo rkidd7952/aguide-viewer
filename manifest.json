@@ -27,8 +27,8 @@
     "file:///*"
   ],
   "web_accessible_resources": [
-      "aguide.html",
-      "README.guide"
+    "aguide.html",
+    "README.guide"
   ],
   "icons": {
     "16": "icon16x16.png",
