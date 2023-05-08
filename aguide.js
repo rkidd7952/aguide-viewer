@@ -28,7 +28,8 @@ function main()
     if(guideEnc) {
         let guide = decodeURI(guideEnc);
         console.log("guide = " + guide);
-        if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0) {
+        if(guide.indexOf("http") === 0 || guide.indexOf("file") === 0 ||
+           guide.indexOf("moz-extension") === 0) {
             let xhr = new XMLHttpRequest();
             xhr.open("GET", guide);
             xhr.responseType = "blob";
@@ -55,10 +56,11 @@ function get_guide_url()
 {
     let params = new URLSearchParams(window.location.search);
     let guideEnc = params.get("guide");
+    let window_url = new URL(window.location);
     if(guideEnc) {
-        return new URL(decodeURI(guideEnc));
+        return new URL(decodeURI(guideEnc) + window_url.hash);
     }
-    return new URL(window.location);
+    return window_url;
 }
 
 function init_page(show_open)
@@ -708,11 +710,13 @@ function toggle_about()
         return;
     }
 
+    let readme_guide = encodeURI(browser.runtime.getURL("README.guide"));
+
     let about_html = `<p class="center">AGuide Viewer</p>
 <p class="center">Version ` + browser.runtime.getManifest().version + `</p>
 <p class="center">Copyright 2023 Robert Kidd</p>
 
-<p class="center"><a href="README.guide" target="_blank" class="ag">README.guide</a></p>
+<p class="center"><a href="aguide.html?guide=` + readme_guide + `" target="_blank" class="ag">README.guide</a></p>
 
 <p>AGuide Viewer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
 
