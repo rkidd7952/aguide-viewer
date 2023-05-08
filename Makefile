@@ -1,6 +1,24 @@
+# Copyright 2023 Robert Kidd
+#
+# This file is part of AGuide Viewer.
+#
+# AGuide Viewer is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# AGuide Viewer is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with AGuide Viewer. If not, see
+# <https://www.gnu.org/licenses/>.
+
 all: aguide.xpi
 
-SRCS=aguide-js.html aguide.js scan.js background.js manifest.json icon*.png aguide.css
+SRCS=aguide-js.html aguide.js scan.js background.js manifest.json icon*.png aguide.css README.txt COPYING
 
 aguide.xpi: $(SRCS)
 	zip $@ $^

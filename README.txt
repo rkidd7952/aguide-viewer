@@ -1,6 +1,10 @@
 AGuide Viewer
 Copyright 2023 Robert Kidd
 
+See the end of the file for license conditions.
+
+Introduction
+
 AGuide Viewer is a reader for AmigaGuide documents implemented as a browser extension.  It is tested with Firefox and Chromium.
 
 Installation
@@ -40,3 +44,11 @@ To tag and package for distribution
 
 Contact for bugs, patches, etc
 Robert Kidd <robert.kidd@gmail.com>
+
+License
+
+AGuide Viewer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+AGuide Viewer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with AGuide Viewer. If not, see <https://www.gnu.org/licenses/>.
