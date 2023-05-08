@@ -2,6 +2,7 @@
   "manifest_version": 2,
   "name": "AGuide Viewer",
   "version": "0.1",
+  "author": "Robert Kidd",
   "description": "Viewer for AmigaGuide documents",
   "background": {
     "scripts": [
