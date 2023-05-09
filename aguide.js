@@ -580,7 +580,9 @@ function render_brace_cmd(aguide, cmd, render_state)
         }
         let cls = apply_style(render_state, tlc);
         if(cls) {
-            render_state.crsr_stack.push(new_element("span", {"class": cls}));
+            let new_span = new_element("span", {"class": cls});
+            cur_crsr(render_state.crsr_stack).appendChild(new_span);
+            render_state.crsr_stack.push(new_span);
         }
         return;
     } else if(tlc === "ub" || tlc === "ui" || tlc === "uu") {
@@ -589,7 +591,9 @@ function render_brace_cmd(aguide, cmd, render_state)
         }
         let cls = remove_style(render_state, tlc);
         if(cls) {
-            render_state.crsr_stack.push(new_element("span", {"class": cls}));
+            let new_span = new_element("span", {"class": cls});
+            cur_crsr(render_state.crsr_stack).appendChild(new_span);
+            render_state.crsr_stack.push(new_span);
         }
         return;
     } else if(tlc === "fg" || tlc === "bg") {
@@ -600,7 +604,9 @@ function render_brace_cmd(aguide, cmd, render_state)
             }
             let cls = apply_color(render_state, tlc, color);
             if(cls) {
-                render_state.crsr_stack.push(new_element("span", {"class": cls}));
+                let new_span = new_element("span", {"class": cls});
+                cur_crsr(render_state.crsr_stack).appendChild(new_span);
+                render_state.crsr_stack.push(new_span);
             }
             return;
         }
