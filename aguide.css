@@ -1,0 +1,145 @@
+/*
+  Copyright 2023 Robert Kidd
+
+  This file is part of AGuide Viewer.
+
+  AGuide Viewer is free software: you can redistribute it and/or
+  modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+
+  AGuide Viewer is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with AGuide Viewer. If not, see
+  <https://www.gnu.org/licenses/>.
+*/
+
+body {
+    font-family: monospace;
+}
+
+.center {
+    text-align: center;
+}
+
+div.about {
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    padding: 10px;
+    width: 50%;
+    height: 50%;
+    z-index: 2147483648;
+    background-color: #aaaaaa;
+    position: fixed;
+    left: 25%;
+    top: 25%;
+    overflow-y: scroll;
+}
+
+a.ag, .button, input.checkbox {
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    text-decoration: none;
+    line-height: 1.4;
+    display: inline-block;
+}
+
+a.ag:active, .button:active, input.checkbox:active {
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.b {
+    font-weight: bold;
+}
+
+.i {
+    font-style: italic;
+}
+
+.u {
+    text-decoration-line: underline;
+}
+
+a.ag, .fg_text {
+    color: #000000;
+}
+
+.fg_shine {
+    color: #ffffff;
+}
+
+.fg_shadow {
+    color: #000000;
+}
+
+.fg_fill {
+    color: #6688bb;
+}
+
+a.ag:active, .fg_filltext {
+    color: #000000;
+}
+
+.fg_back {
+    color: #aaaaaa;
+}
+
+.fg_highlight {
+    color: #ffffff;
+}
+
+.bg_text {
+    background-color: #000000;
+}
+
+.bg_shine {
+    background-color: #ffffff;
+}
+
+.bg_shadow {
+    background-color: #000000;
+}
+
+a.ag:active, .button:active, input.checkbox:active, .bg_fill {
+    background-color: #6688bb;
+}
+
+.bg_filltext {
+    background-color: #000000;
+}
+
+div.toolbar, body, .bg_back, .button, input.checkbox {
+    background-color: #aaaaaa;
+}
+
+.bg_highlight {
+    background-color: #ffffff;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+div.toolbar {
+    position: fixed;
+    width: 100%;
+    height: 1.5em;
+    top: 0;
+    left: 0;
+    padding: .5em;
+}
+
+div.aguide {
+    padding-top: 2em;
+}
