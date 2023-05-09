@@ -18,6 +18,8 @@
   <https://www.gnu.org/licenses/>.
 */
 
+const NBSP_UC = "\u00A0";
+
 function main()
 {
     init_page(true);
@@ -76,51 +78,53 @@ function init_page(show_open)
         document.body = body;
     }
     
-    body.innerHTML = `<div>
-  <div class="toolbar" id="toolbar">` +
-        (show_open ? `<input type="file" id="open-file"/><button type="button" class="button" id="button-open">Open File...</button>` : ``) + `
-    <button type="button" class="button" id="button-contents" disabled="true">Contents</button>
-    <button type="button" class="button" id="button-index" disabled="true">Index</button>
-    <button type="button" class="button" id="button-help" disabled="true">Help</button>
-    <button type="button" class="button" id="button-retrace" disabled="true">Retrace</button>
-    <button type="button" class="button" id="button-browse-prev" disabled="true">Browse &lt;</button>
-    <button type="button" class="button" id="button-browse-next" disabled="true">Browse &gt;</button>
-    <button type="button" class="button" id="button-about">About</button>
-  </div>
-
-  <div id="aguide" class="aguide">
-  </div>
-</div>`;
-
-    document.getElementById("open-file").addEventListener(
-        "change", read_input, false);
-
-    document.getElementById("button-open").onclick = () => {
-        document.getElementById("open-file").click();
-    };
-
-    document.getElementById("button-retrace").onclick = () => {
-        history.go(-1);
-    };
-
-    document.getElementById("button-about").onclick = () => {
-        toggle_about();
-    };
-
-    // &nbsp;|&nbsp;
-    // <input type="checkbox" class="checkbox" id="fixed-width-font" checked="true">Fixed width font</input>
-    // document.getElementById("fixed-width-font").onclick = () => {
-    //     var cb = document.getElementById("fixed-width-font");
-    //     var b = document.getElementsByTagName("body")[0];
-    //     if(cb.checked) {
-    //         b.style.fontFamily = "monospace";
-    //     } else {
-    //         b.style.fontFamily = "initial";
-    //     }
-    // };
+    let body_div = document.createElement("div");
+    body_div.appendChild(make_toolbar(show_open));
+    body_div.appendChild(new_element("div", {"id": "aguide",
+                                             "class": "aguide"}));
+    body.appendChild(body_div);
 
     addEventListener("popstate", handle_popstate);
     addEventListener("hashchange", display_node_hash);
+}
+
+function make_toolbar(show_open)
+{
+    let toolbar_div = new_element("div", {"id": "toolbar", "class": "toolbar"});
+    if(show_open) {
+        let open_file = new_element("input", {"type": "file", "id": "open-file"});
+        open_file.addEventListener("change", read_input, false);
+        toolbar_div.appendChild(open_file);
+        toolbar_div.appendChild(
+            new_button("button-open", "Open File...", false,
+                       () => {
+                           document.getElementById("open-file").click();
+                       }));
+        toolbar_div.appendChild(document.createTextNode(" "));
+    }
+    toolbar_div.appendChild(new_button("button-contents", "Contents", true,
+                                       null));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(new_button("button-index", "Index", true, null));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(new_button("button-help", "Help", true, null));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(
+        new_button("button-retrace", "Retrace", true, () => {
+            history.go(-1);
+        }));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(new_button("button-browse-prev", "Browse <",
+                                       true, null));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(new_button("button-browse-next", "Browse >",
+                                       true, null));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(
+        new_button("button-about", "About", false, (event) => {
+            toggle_about();
+        }));
+    return toolbar_div;
 }
 
 function handle_popstate(event)
@@ -461,13 +465,23 @@ function display_node(name)
 
     document.title = get_title(AG, n);
     let div = document.getElementById("aguide");
-    div.innerHTML = html;
+    let old = div.firstChild;
+    if(old) {
+        div.removeChild(old);
+    }
+    div.appendChild(html);
+}
+
+function cur_crsr(st) {
+    return st[st.length - 1];
 }
 
 /* Translate amiga guide node to HTML */
 function render_html(aguide, node)
 {
-    let html = "";
+    let html = new_element("div", {});
+    // crsr is the current element to which unmarked text is appended.
+    let crsr = html;
 
     let ps = new_node_tbuf(aguide, node);
 
@@ -477,58 +491,60 @@ function render_html(aguide, node)
         { cmd: "@prev", handler: handle_toc_next_prev }
     ];
     
+    /* Convert any space chars at the beginning of a line to non-breaking */
     let ps2 = tbuf_translate(ps,
-                             [{from: "<", to: "&lt;"},
-                              {from: ">", to: "&gt;"},
-                              {from: "\n", to: "<br>"}]);
+                             [{from: /(\n)( +)/gm,
+                               to: (match, p1, p2, offset, string) => {
+                               let r = p1;
+                               for(let i = 0; i < p2.length; ++i) {
+                                   r += NBSP_UC;
+                               }
+                               return r;
+                               }}]);
+
     let render_state = {
-        style: []
+        style: [],
+        crsr_stack: [html]
     };
 
     while(!at_eof(ps2)) {
         console.info("pos: " + ps2.pos);
 
-        let c = tbuf_search_token(ps2, /[\\@]/, true);
+        let c = tbuf_search_token(ps2, /[\\@\n]/, true);
         if(!c) {
-            html += tbuf_slice(ps2, ps2.pos, -1, false);
+            add_text(crsr, tbuf_slice(ps2, ps2.pos, -1, false));
             break;
         }
 
-        html += tbuf_slice(ps2, 0, c.start - ps2.pos, false);
+        add_text(crsr, tbuf_slice(ps2, 0, c.start - ps2.pos, false));
 
         if(c.token === "\\") { /* escape */
             /* Skip backslash, emit next char */
-            html += tbuf_slice(ps2, 1, 2, false);
+            add_text(crsr, tbuf_slice(ps2, 1, 2, false));
+        } else if(c.token === "\n") {
+            tbuf_consume_token(ps2, c);
+            crsr.appendChild(new_element("br", {}));
         } else if(c.token === "@") { /* start cmd */
             let brace = tbuf_search_token(ps2, /^@{[^}]*}/, true);
             if(brace) {
                 tbuf_consume_token(ps2, brace);
                 let cmd = brace.token.slice(2, -1);
                 console.log("handle @{" + cmd + "}");
-                html += render_brace_cmd(aguide, cmd, render_state);
+                render_brace_cmd(aguide, cmd, render_state);
+                crsr = cur_crsr(render_state.crsr_stack);
             } else {
                 let t = get_next_token(ps2, false);
                 let cmd = t.token.toLowerCase();
                 let cmd_handler = get_handler(cmd_handlers, cmd);
                 console.log("handle cmd " + cmd);
                 if(cmd_handler) {
-                    html += cmd_handler(aguide, node, cmd, ps2);
+                    append_children(crsr, cmd_handler(aguide, node, cmd, ps2));
                 } else {
-                    html += t.token;
+                    add_text(crsr, t.token);
                 }
             }
         }
     }
-
-    /* Convert any space chars at the beginning of a line to non-breaking */
-    html = html.replaceAll(/(<br>(?:<\/?span[^>]*>)*)( +)/gm,
-                           (match, p1, p2, offset, string) => {
-                               let r = p1;
-                               for(let i = 0; i < p2.length; ++i) {
-                                   r += "&nbsp;";
-                               }
-                               return r;
-                           });
 
     return html;
 }
@@ -553,43 +569,53 @@ function render_brace_cmd(aguide, cmd, render_state)
     let ps = new_tbuf(cmd);
     let t = get_next_token(ps, false);
     if(!t) {
-        return orig;
+        add_text(cur_crsr(render_state.crsr_stack), orig);
+        return;
     }
 
     let tlc = t.token.toLowerCase();
     if(tlc === "b" || tlc === "i" || tlc === "u") {
-        let html = render_state.style.length > 0 ? "</span>" : "";
+        if(render_state.style.length > 0) {
+            render_state.crsr_stack.pop();
+        }
         let cls = apply_style(render_state, tlc);
         if(cls) {
-            html += "<span class=\"" + cls + "\">";
+            render_state.crsr_stack.push(new_element("span", {"class": cls}));
         }
-        return html;
+        return;
     } else if(tlc === "ub" || tlc === "ui" || tlc === "uu") {
-        let html = render_state.style.length > 0 ? "</span>" : "";
+        if(render_state.style.length > 0) {
+            render_state.crsr_stack.pop();
+        }
         let cls = remove_style(render_state, tlc);
         if(cls) {
-            html += "<span class=\"" + cls + "\">";
+            render_state.crsr_stack.push(new_element("span", {"class": cls}));
         }
-        return html;
+        return;
     } else if(tlc === "fg" || tlc === "bg") {
         let color = get_next_token(ps, false);
         if(color) {
-            let html = render_state.style.length > 0 ? "</span>" : "";
+            if(render_state.style.length > 0) {
+                render_state.crsr_stack.pop();
+            }
             let cls = apply_color(render_state, tlc, color);
             if(cls) {
-                html += "<span class=\"" + cls + "\">";
+                render_state.crsr_stack.push(new_element("span", {"class": cls}));
             }
-            return html;
+            return;
         }
     } else {
-        let html = render_link(ps, t.token);
-        if(!html) {
-            return orig;
+        let link = render_link(ps, t.token);
+        if(!link) {
+            add_text(cur_crsr(render_state.crsr_stack), orig);
+            return;
         }
-        return html;
+        cur_crsr(render_state.crsr_stack).appendChild(link);
+        return;
     }
 
-    return orig;
+    add_text(cur_crsr(render_state.crsr_stack), orig);
+    return;
 }
 
 function render_link(ps, link_text)
@@ -597,7 +623,7 @@ function render_link(ps, link_text)
     link_text = str_strip_quote(link_text);
     let link_text_len = link_text.length;
     link_text = str_translate(link_text,
-                              [{from: " ", to: "&nbsp;"}]);
+                              [{from: " ", to: NBSP_UC}]);
 
     let t = get_next_token(ps, false);
     if(!t) {
@@ -651,13 +677,12 @@ function render_link(ps, link_text)
             link = "#" + encodeURI(name);
         }
 
-        let a = document.createElement("a");
-        a.className = "ag";
-        a.href = link;
-        a.onclick = handle_click_link;
-        a.innerHTML = link_text;
-        a.style = "width: " + link_text_len + "em;";
-        return a.outerHTML;
+        let a = new_element("a", {"class": "ag",
+                                  "href": link,
+                                  "onclick": handle_click_link,
+                                  "style": "width: " + link_text_len + "em;"});
+        a.textContent = " " + link_text + " ";
+        return a;
     }
 
     return null;
@@ -701,6 +726,54 @@ function new_node_tbuf(aguide, node)
     return new_tbuf(aguide.text.slice(node.start, node.end));
 }
 
+function new_element(typ, attrs)
+{
+    let e = document.createElement(typ);
+    for(const k in attrs) {
+        e.setAttribute(k, attrs[k]);
+    }
+    return e;
+}
+
+function new_button(id, label, disabled, onclick)
+{
+    let b = new_element("button", {"type": "button",
+                                   "class": "button",
+                                   "id": id});
+    b.textContent = label;
+    b.disabled = disabled;
+    if(onclick) {
+        b.addEventListener("click", onclick, true);
+    }
+    return b;
+}
+
+function new_element_with_text(typ, attrs, txt)
+{
+    let e = new_element(typ, attrs);
+    e.textContent = txt;
+    return e;
+}
+
+function new_p(attrs, txt)
+{
+    let p = new_element("p", attrs);
+    p.textContent = txt;
+    return p;
+}
+
+function add_text(el, txt)
+{
+    el.appendChild(document.createTextNode(txt));
+}
+
+function append_children(el, children)
+{
+    for(const c in children) {
+        el.appendChild(c);
+    }
+}
+
 function toggle_about()
 {
     let guide_div = document.getElementById("aguide");
@@ -717,32 +790,38 @@ function toggle_about()
 
     let readme_guide = encodeURI(browser.runtime.getURL("README.guide"));
 
-    let about_html = `<p class="center">AGuide Viewer</p>
-<p class="center">Version ` + browser.runtime.getManifest().version + `</p>
-<p class="center">Copyright 2023 Robert Kidd</p>
-
-<p class="center"><a href="aguide.html?guide=` + readme_guide + `" target="_blank" class="ag">README.guide</a></p>
-
-<p>AGuide Viewer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
-
-<p>AGuide Viewer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
-
-<p>You should have received a copy of the GNU General Public License along with AGuide Viewer. If not, see <a href="https://www.gnu.org/licenses/" target="_blank">https://www.gnu.org/licenses/</a>.</p>
-
-<div class="center">
-    <button type="button" class="button" id="button-about-ok">OK</button>
-</div>`;
-
-    about_div = document.createElement("div");
-    about_div.className = "about";
-    about_div.id = "about";
-    about_div.innerHTML = about_html;
+    about_div = new_element("div", {"class": "about", "id": "about"});
+    about_div.appendChild(new_element_with_text("p", {"class": "center"},
+                                                "AGuide Viewer"));
+    about_div.appendChild(new_element_with_text("p", {"class": "center"},
+                                                "Version " + browser.runtime.getManifest().version));
+    about_div.appendChild(new_element_with_text("p", {"class": "center"},
+                                                "Copyright 2023 Robert Kidd"));
+    let p = new_element("p", {"class": "center"});
+    p.appendChild(
+        new_element_with_text("a",
+                              {"class": "ag",
+                               "href": "aguide.html?guide=" + readme_guide,
+                               "target": "_blank"},
+                              "README.guide"));
+    about_div.appendChild(p);
+    about_div.appendChild(new_element_with_text("p", {}, "AGuide Viewer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version."));
+    about_div.appendChild(new_element_with_text("p", {}, "AGuide Viewer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details."));
+    p = new_element_with_text("p", {}, "You should have received a copy of the GNU General Public License along with AGuide Viewer. If not, see ")
+    p.appendChild(new_element_with_text("a",
+                                        {"href": "https://www.gnu.org/licenses/",
+                                         "target": "_blank"},
+                                        "https://www.gnu.org/licenses/"));
+    p.appendChild(document.createTextNode("."))
+    about_div.appendChild(p);
+    let d = new_element("div", {"class": "center"});
+    d.appendChild(new_button("button-about-ok", "OK", false,
+                             () => {
+                                 toggle_about();
+                             }));
+    about_div.appendChild(d);
 
     guide_div.appendChild(about_div);
-
-    document.getElementById("button-about-ok").onclick = () => {
-        toggle_about();
-    };
 }
 
 /******* token buf functions *******/
