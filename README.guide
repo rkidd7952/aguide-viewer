@@ -48,9 +48,15 @@ browser extension.  It is tested with Firefox and Chromium.
 Installation
 
 Firefox:
+ - Download the release build from https://github.com/rkidd7952/aguide-viewer/releases/download/v0.1/aguide-0.1.xpi
+ - Tools > Add-ons
+ - (Gear icon) > Install Add-on From File...
+ - Choose aguide-0.1.xpi
+
+Firefox (development build):
  - Browse to about:debugging#/runtime/this-firefox
  - Choose Load Temporary Add-on...
- - Load aguide.xpi
+ - Load aguide.xpi or manifest.json
 
 Chromium:
  - Unzip aguide.xpi
