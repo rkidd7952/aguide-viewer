@@ -10,10 +10,17 @@ AGuide Viewer is a reader for AmigaGuide documents implemented as a browser exte
 ![screenshot](doc/screenshot.png)
 
 Installation
+
 Firefox:
+ - Download the release build [aguide-0.1.xpi](https://github.com/rkidd7952/aguide-viewer/releases/download/v0.1/aguide-0.1.xpi)
+ - Tools > Add-ons
+ - (Gear icon) > Install Add-on From File...
+ - Choose aguide-0.1.xpi
+
+Firefox (development build):
  - Browse to about:debugging#/runtime/this-firefox
  - Choose Load Temporary Add-on...
- - Load aguide.xpi
+ - Load aguide.xpi or manifest.json
 
 Chromium:
  - Unzip aguide.xpi
@@ -24,6 +31,7 @@ Chromium:
  - Load aguide-unzipped as an unpacked extension
  
 Limitations
+
 Links from one AmigaGuide document to another may not work as expected when browsing local files in Firefox.  Firefox blocks direct links to local files from the extension.  To open such a link, right click, open the link in a new tab or window, then reload the new tab to render.
 
 Building / Dependencies
