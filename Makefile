@@ -18,7 +18,7 @@
 
 all: aguide.xpi
 
-SRCS=aguide.html aguide.js scan.js background.js manifest.json icon*.png aguide.css README README.guide COPYING
+SRCS=aguide.html aguide.js scan.js background.js manifest.json icon*.png aguide.css README.md README.guide COPYING
 
 aguide.xpi: $(SRCS)
 	zip $@ $^
