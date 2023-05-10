@@ -7,6 +7,8 @@ Introduction
 
 AGuide Viewer is a reader for AmigaGuide documents implemented as a browser extension.  It is tested with Firefox and Chromium.
 
+![screenshot](doc/screenshot.png)
+
 Installation
 Firefox:
  - Browse to about:debugging#/runtime/this-firefox
