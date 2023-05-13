@@ -5,9 +5,12 @@ See the end of the file for license conditions.
 
 Introduction
 
-AGuide Viewer is a reader for AmigaGuide documents implemented as a browser extension.  It is tested with Firefox and Chromium.
+AGuide Viewer is an open source reader for AmigaGuide documents implemented as a browser extension.  It works with Firefox* and Chromium** on all platforms.
 
 ![screenshot](doc/screenshot.png)
+
+* Tested on Windows and Linux
+** Tested on Linux
 
 Installation
 
@@ -30,6 +33,16 @@ Chromium:
  - Choose More tools -> Extensions
  - Load aguide-unzipped as an unpacked extension
  
+Usage
+
+The extension installs hooks to detect downloads of files with a .guide filename extension or that start with the '@database' sequence.  AmigaGuide documents downloaded from the web are automatically rendered in the browser.
+
+The extension supports viewing local files.  Open a local file using any method supported by the browser, entering a file:/// URL, use the File->Open menu option, or use the operating system's file manager to open a .guide file with the browser.
+
+Alternatively, AGuide Viewer can be launched by clicking the AGV icon in the browser's toolbar.  The interface mimics that of the AmigaGuide or MultiView utilities.
+
+Navigation buttons (Contents, Retrace, Browse) work as they do in the native Amiga readers.  The browser's native history commands also work as normal.
+
 Limitations
 
 Links from one AmigaGuide document to another may not work as expected when browsing local files in Firefox.  Firefox blocks direct links to local files from the extension.  To open such a link, right click, open the link in a new tab or window, then reload the new tab to render.
