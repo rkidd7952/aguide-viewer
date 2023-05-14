@@ -1,0 +1,15 @@
+[ ] Bug 1: Window scroll doesn't update when changing nodes
+
+This bug needs two linked pages that overflow the browser window
+
+1. Scroll down first page to find link
+2. Click link
+3. Second page is scrolled at same point as first
+
+The viewer needs to save the current scroll point in history, then
+scroll to 0, 0 in the new page.
+
+Work in progress on bug_1_scroll
+
+Reproducible on PPaint.guide (Project menu)
+
