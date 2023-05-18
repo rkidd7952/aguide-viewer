@@ -1,4 +1,6 @@
-[ ] Bug 1: Window scroll doesn't update when changing nodes
+[ ] Bug 2: Window scroll doesn't update when changing nodes
+
+https://github.com/rkidd7952/aguide-viewer/issues/2
 
 This bug needs two linked pages that overflow the browser window
 
@@ -12,4 +14,63 @@ scroll to 0, 0 in the new page.
 Work in progress on bug_1_scroll
 
 Reproducible on PPaint.guide (Project menu)
+
+
+
+[ ] Bug 3: Package and submit extension to Chrome store
+
+https://github.com/rkidd7952/aguide-viewer/issues/3
+
+Package and submit the extension to the Chrome store to be
+signed. This will make installation on Chrome/Chromium much easier.
+
+
+
+[ ] Bug 4: Submit extension to Firefox Add-on repo
+
+https://github.com/rkidd7952/aguide-viewer/issues/4
+
+Once the extension is stable, submit for inclusion in the official
+Firefox Add-on site to make installation easier.
+
+
+
+[ ] Bug 5: Add tooltip to links that require more than a click to open
+
+https://github.com/rkidd7952/aguide-viewer/issues/5
+
+In Firefox, a link to a local external document may not work as
+expected.  Firefox blocks links that refer to a URL starting with
+file:/// as a security measure.  These links can be opened using a
+workaround (right click, open the link in a new tab or window, then
+reload the new tab to render).
+
+The viewer should add a tool tip to explain this when hovering over an
+affected link.
+
+To reproduce, see testdata/external_links.guide
+
+
+
+[ ] Bug 6: Links to external documents may not work as expected in Firefox
+
+https://github.com/rkidd7952/aguide-viewer/issues/6
+
+Links from one AmigaGuide document to another may not work as expected
+when browsing local files (file:/// URL) in Firefox.  Firefox blocks
+direct links to local files from the extension as a security measure.
+
+To open such a link, right click, open the link in a new tab or
+window, then reload the new tab to render.
+
+Filing this issue for documentation.  I'm not sure anything can be
+done to fix this.
+
+
+
+[ ] Bug 7: Links to external documents that use device names don't work
+
+A link to an external document that uses a device name doesn't work.
+
+To reproduce, see testdata/external_links.guide
 
