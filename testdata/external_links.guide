@@ -1,0 +1,31 @@
+@database external_links
+
+@node main "external_links.guide"
+
+This document tests links to other AmigaGuide documents
+
+A link to a node in this AmigaGuide document (an internal link) should
+always work.
+
+@{"Internal link" Link "internal_node"}
+
+A link to a node in another AmigaGuide document (an external link) may
+require special interaction on Firefox.  When viewing this guide
+locally (file:/// URL), Firefox will block the link to another local
+file.  This external link would work if this guide was being viewed
+from the web (http[s]:// URL).
+
+@{"Relative external link" Link "another.guide/main"}
+
+A link to another AmigaGuide document that uses an absolute path
+(device/volume name) almost certainly doesn't work.
+
+@{"Relative external link" Link "Work:another.guide/main_abs"}
+
+@endnode
+
+@node "internal_node" "Internal Node"
+
+Success!  The internal link works!
+
+@endnode
