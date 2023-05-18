@@ -5,12 +5,11 @@ See the end of the file for license conditions.
 
 Introduction
 
-AGuide Viewer is an open source reader for AmigaGuide documents implemented as a browser extension.  It works with Firefox* and Chromium** on all platforms.
+AGuide Viewer is an open source reader for AmigaGuide documents implemented as a browser extension.  It works with Firefox* and Chromium* on all platforms.
 
 ![screenshot](doc/screenshot.png)
 
 * Tested on Windows and Linux
-** Tested on Linux
 
 Installation
 
