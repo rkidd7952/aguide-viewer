@@ -1,0 +1,17 @@
+@database another_guide
+
+@node main "Relative link target"
+
+This document is a target for external links from external_links.guide.
+
+Successfully loaded a relative external link from external_links.guide.
+
+@endnode
+
+@node main_abs "Absolute link target"
+
+This document is a target for external links from external_links.guide.
+
+Successfully loaded an absolute external link from external_links.guide.
+
+@endnode
