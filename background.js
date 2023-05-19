@@ -32,10 +32,19 @@ const get_aguide_url = (ag_url = null) => {
     return aguide_url;
 }
 
-function handle_on_before_request(details)
+function handle_on_headers_received(details)
 {
-    console.log("onBeforeRequest");
-    return { redirectUrl: get_aguide_url(details.url) };
+    // console.log("onHeadersReceived");
+
+    let ct_header = details.responseHeaders.find((x) => {
+        return x.name.toLowerCase() == "content-type" });
+    if(ct_header) {
+        ct = ct_header.value.toLowerCase();
+
+        if(ct === "text/plain" || ct === "application/octet-stream") {
+            return { redirectUrl: get_aguide_url(details.url) };
+        }
+    }
 }
 
 function open_page()
@@ -47,7 +56,7 @@ function handle_message(request, sender, sendResponse)
 {
     const guideTextKey = "guideText";
 
-    console.log("handling " + request.method);
+    // console.log("handling " + request.method);
 
     if(request.method === "getGuideText") {
         sendResponse(JSON.parse(sessionStorage.getItem(guideTextKey)));
@@ -65,7 +74,7 @@ function handle_message(request, sender, sendResponse)
 
 function load_it()
 {
-    browser.webRequest.onBeforeRequest.addListener(handle_on_before_request, {
+    browser.webRequest.onHeadersReceived.addListener(handle_on_headers_received, {
         urls: [
             'file:///*/*.guide*',
             'file:///*/*.GUIDE*',
@@ -73,11 +82,11 @@ function load_it()
             '*://*/*.GUIDE*'
         ],
         types: ['main_frame']
-    }, ["blocking"]);
+    }, ["blocking", "responseHeaders"]);
 
     browser.browserAction.onClicked.addListener(open_page);
     browser.runtime.onMessage.addListener(handle_message);
 }
 
 load_it();
-console.log("loaded");
+// console.log("loaded");
