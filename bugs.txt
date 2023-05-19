@@ -70,7 +70,32 @@ done to fix this.
 
 [ ] Bug 7: Links to external documents that use device names don't work
 
+https://github.com/rkidd7952/aguide-viewer/issues/7
+
 A link to an external document that uses a device name doesn't work.
 
 To reproduce, see testdata/external_links.guide
 
+
+
+[X] Bug 8: Extension is being activated if submitted search form
+contains ".guide"
+
+https://github.com/rkidd7952/aguide-viewer/issues/8
+Filed by amigaosz
+
+I hope I didn't somehow overlook that this issue has already been reported.
+
+What I noticed: If I enter ".guide" in the search term on duckduckgo.com or Google or actually in any other search form on the site and send the request, the extension is automatically activated. I'm using Firefox 113.0.1 (64-bit) on Linux Mint.
+
+By the way: Great plugin, I've been looking for something like this for a long, long time. Thank you so much for the great work! :)
+
+
+
+[ ] Bug 9: Safari support
+
+https://github.com/rkidd7952/aguide-viewer/issues/9
+Filed by polluks2
+
+Nice to have...
+https://developer.apple.com/documentation/safariservices/safari_app_extensions
