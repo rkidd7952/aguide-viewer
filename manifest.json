@@ -9,22 +9,12 @@
       "background.js"
     ]
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "*://*/*",
-        "file:///*"
-      ],
-      "js": [
-        "scan.js"
-      ]
-    }
-  ],
   "content_security_policy": "script-src 'self'; object-src 'self';",
   "permissions": [
+    "scripting",
+    "storage",  
     "webRequest",
     "webRequestBlocking",
-    "storage",  
     "<all_urls>",
     "file:///*"
   ],

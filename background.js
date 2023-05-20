@@ -41,7 +41,8 @@ function handle_on_headers_received(details)
     if(ct_header) {
         ct = ct_header.value.toLowerCase();
 
-        if(ct === "text/plain" || ct === "application/octet-stream") {
+        if(ct.startsWith("text/plain") ||
+           ct.startsWith("application/octet-stream")) {
             return { redirectUrl: get_aguide_url(details.url) };
         }
     }
@@ -50,11 +51,6 @@ function handle_on_headers_received(details)
 function open_page()
 {
     browser.tabs.create({ url: get_aguide_url() });
-}
-
-function default_prefs()
-{
-    return {detect_ext: true, detect_sig: true};
 }
 
 function handle_message(request, sender, sendResponse)
@@ -73,27 +69,65 @@ function handle_message(request, sender, sendResponse)
         }
         sendResponse({});
     } else if(request.method === "loadPrefs") {
-        console.log("loadPrefs");
-        return browser.storage.local.get("prefs").then(
-            (prefs) => {
-                return prefs.prefs ? prefs.prefs : default_prefs();
-            });
+        return load_prefs();
     } else if(request.method === "savePrefs") {
         browser.storage.local.set({prefs: request.prefs});
+        handle_prefs_update(request.prefs);
+    }
+}
+
+function default_prefs()
+{
+    return {detect_ext: true, detect_sig: true};
+}
+
+function load_prefs()
+{
+    return browser.storage.local.get("prefs").then(
+        prefs => prefs.prefs ? prefs.prefs : default_prefs());
+}
+
+function handle_prefs_update(prefs)
+{
+    const orh = browser.webRequest.onHeadersReceived;
+
+    if(prefs.detect_ext) {
+        if(!orh.hasListener(handle_on_headers_received)) {
+            orh.addListener(handle_on_headers_received, {
+                urls: [
+                    'file:///*/*.guide*',
+                    'file:///*/*.GUIDE*',
+                    '*://*/*.guide*',
+                    '*://*/*.GUIDE*'
+                ],
+                types: ['main_frame']
+            }, ["blocking", "responseHeaders"]);
+        }
+    } else {
+        orh.removeListener(handle_on_headers_received);
+    }
+
+    const scanner_id = "aguide-scanner";
+    if(prefs.detect_sig) {
+        browser.scripting.getRegisteredContentScripts({ids: [scanner_id]})
+            .then(scripts => scripts.length > 0 ? scripts :
+                  browser.scripting.registerContentScripts([{
+                      id: "aguide-scanner",
+                      js: ["scan.js"],
+                      matches: [
+                          "*://*/*",
+                          "file:///*"
+                      ],
+                  }]));
+    } else {
+        browser.scripting.unregisterContentScripts({ids: [scanner_id]})
+            .then(null, reason => null);
     }
 }
 
 function load_it()
 {
-    browser.webRequest.onHeadersReceived.addListener(handle_on_headers_received, {
-        urls: [
-            'file:///*/*.guide*',
-            'file:///*/*.GUIDE*',
-            '*://*/*.guide*',
-            '*://*/*.GUIDE*'
-        ],
-        types: ['main_frame']
-    }, ["blocking", "responseHeaders"]);
+    load_prefs().then(handle_prefs_update);
 
     browser.browserAction.onClicked.addListener(open_page);
     browser.runtime.onMessage.addListener(handle_message);
