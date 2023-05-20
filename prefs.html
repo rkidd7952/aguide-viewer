@@ -26,9 +26,16 @@
 <body>
 
 <div id="prefs-dlg" hidden>
-  Detection<br>
-  <input type="checkbox" id="file-ext">Detect by filename<br>
-  <input type="checkbox" id="file-sig">Detect by signature<br>
+  AmigaGuide Detection<br>
+  <input type="checkbox" id="file-ext">
+  <label for="file-ext" class="has-help">Detect by filename</label>
+  <div class="help">Intercept downloads of files with .guide extension</div>
+  <br>
+  <input type="checkbox" id="file-sig">
+  <label for="file-sig" class="has-help">Detect by signature</label>
+  <div class="help">Inspect each downloaded file and interpret as
+  AmigaGuide if file starts '@database'</div>
+  <br>
 <br><br><br><br>
   <div class="center">
     <button type="button" class="button" id="save-button">Save</button>&nbsp;

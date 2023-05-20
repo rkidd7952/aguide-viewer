@@ -42,6 +42,20 @@ div.about {
     overflow-y: scroll;
 }
 
+div.help {
+    visibility: hidden;
+    position: absolute;
+    background-color: lightyellow;
+    padding: 0.5em;
+    left: 4em;
+    border: 1px solid black;
+}
+
+.has-help:hover + div.help {
+    visibility: visible;
+    transition-delay: 1s;
+}
+
 div.prefs {
     overflow: hidden;
     height: 13em;
