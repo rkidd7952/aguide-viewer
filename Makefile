@@ -22,7 +22,6 @@ SRCS=aguide.html \
 	prefs.html \
 	aguide.js \
 	prefs.js \
-	start.js \
 	scan.js \
 	background.js \
 	manifest.json \
