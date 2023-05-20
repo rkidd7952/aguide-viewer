@@ -24,12 +24,14 @@
   "permissions": [
     "webRequest",
     "webRequestBlocking",
+    "storage",  
     "<all_urls>",
     "file:///*"
   ],
   "web_accessible_resources": [
     "aguide.html",
-    "README.guide"
+    "README.guide",
+    "prefs.html"
   ],
   "icons": {
     "16": "icon16x16.png",

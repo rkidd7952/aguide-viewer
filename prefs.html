@@ -19,20 +19,24 @@
     <https://www.gnu.org/licenses/>.
 -->
 <html>
-<meta charset="ISO-8859-1" />
 <head>
-  <title>AGuide Viewer</title>
+  <title>Preferences</title>
   <link rel="stylesheet" href="aguide.css" type="text/css">
-  <style>
-    span.bookmarklet {
-        float: right;
-        margin-right: 1.5em;
-    }
-  </style>
 </head>
 <body>
 
-  <script src="aguide.js"></script>
+<div id="prefs-dlg" hidden>
+  Detection<br>
+  <input type="checkbox" id="file-ext">Detect by filename<br>
+  <input type="checkbox" id="file-sig">Detect by signature<br>
+<br><br><br><br>
+  <div class="center">
+    <button type="button" class="button" id="save-button">Save</button>&nbsp;
+    <button type="button" class="button" id="cancel-button">Cancel</button>
+  </div>
+</div>
+
+<script src="prefs.js"></script>
 
 </body>
 </html> 

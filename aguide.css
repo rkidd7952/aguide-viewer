@@ -42,6 +42,16 @@ div.about {
     overflow-y: scroll;
 }
 
+div.prefs {
+    overflow: hidden;
+    height: 13em;
+}
+
+iframe.prefs {
+    width: 100%;
+    height: 13em;
+}
+
 a.ag, .button, input.checkbox {
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;

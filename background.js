@@ -52,6 +52,11 @@ function open_page()
     browser.tabs.create({ url: get_aguide_url() });
 }
 
+function default_prefs()
+{
+    return {detect_ext: true, detect_sig: true};
+}
+
 function handle_message(request, sender, sendResponse)
 {
     const guideTextKey = "guideText";
@@ -67,8 +72,14 @@ function handle_message(request, sender, sendResponse)
             console.log("setItem threw exception: " + error);
         }
         sendResponse({});
-    } else {
-        sendResponse({});
+    } else if(request.method === "loadPrefs") {
+        console.log("loadPrefs");
+        return browser.storage.local.get("prefs").then(
+            (prefs) => {
+                return prefs.prefs ? prefs.prefs : default_prefs();
+            });
+    } else if(request.method === "savePrefs") {
+        browser.storage.local.set({prefs: request.prefs});
     }
 }
 
