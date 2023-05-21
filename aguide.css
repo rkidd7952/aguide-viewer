@@ -42,6 +42,30 @@ div.about {
     overflow-y: scroll;
 }
 
+div.help {
+    visibility: hidden;
+    position: absolute;
+    background-color: lightyellow;
+    padding: 0.5em;
+    left: 4em;
+    border: 1px solid black;
+}
+
+.has-help:hover + div.help {
+    visibility: visible;
+    transition-delay: 1s;
+}
+
+div.prefs {
+    overflow: hidden;
+    height: 13em;
+}
+
+iframe.prefs {
+    width: 100%;
+    height: 13em;
+}
+
 a.ag, .button, input.checkbox {
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;

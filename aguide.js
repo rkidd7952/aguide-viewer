@@ -20,8 +20,14 @@
 
 const NBSP_UC = "\u00A0";
 
+if(typeof browser === "undefined") {
+    var browser = chrome;
+}
+
 function main()
 {
+    browser.runtime.onMessage.addListener(handle_message);
+
     init_page(true);
 
     let params = new URLSearchParams(window.location.search);
@@ -43,9 +49,9 @@ function main()
             xhr.send();
         }
     } else if(storage_name_enc) {
-        if(typeof browser === "undefined") {
-            var browser = chrome;
-        }
+        // if(typeof browser === "undefined") {
+        //     var browser = chrome;
+        // }
 
         const storage_name = decodeURI(storage_name_enc);
         browser.runtime.sendMessage({method: "getGuideText"}, function(resp) {
@@ -88,6 +94,14 @@ function init_page(show_open)
     addEventListener("hashchange", display_node_hash);
 }
 
+function handle_message(request, sender, sendResponse)
+{
+    if(request.method === "removePrefsWindow") {
+        close_preferences();
+        sendResponse({});
+    }
+}
+
 function make_toolbar(show_open)
 {
     let toolbar_div = new_element("div", {"id": "toolbar", "class": "toolbar"});
@@ -119,6 +133,9 @@ function make_toolbar(show_open)
     toolbar_div.appendChild(document.createTextNode(" "));
     toolbar_div.appendChild(new_button("button-browse-next", "Browse >",
                                        true, null));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(new_button("button-browse-next", "Preferences...",
+                                       false, () => { show_preferences(); }));
     toolbar_div.appendChild(document.createTextNode(" "));
     toolbar_div.appendChild(
         new_button("button-about", "About", false, (event) => {
@@ -785,9 +802,9 @@ function toggle_about()
     let guide_div = document.getElementById("aguide");
     let about_div = document.getElementById("about");
 
-    if(typeof browser === "undefined") {
-        var browser = chrome;
-    }
+    // if(typeof browser === "undefined") {
+    //     var browser = chrome;
+    // }
 
     if(about_div) {
         guide_div.removeChild(about_div);
@@ -828,6 +845,43 @@ function toggle_about()
     about_div.appendChild(d);
 
     guide_div.appendChild(about_div);
+}
+
+function show_preferences()
+{
+    let guide_div = document.getElementById("aguide");
+    let prefs_div = document.getElementById("prefs");
+    
+    if(prefs_div) {
+        return;
+    }
+
+    about_div = new_element("div", {"class": "about prefs", "id": "prefs"});
+    about_div.appendChild(new_element("iframe", {
+        "class": "prefs",
+        "src": browser.runtime.getURL("prefs.html"),
+        "title": "Preferences"}));
+    guide_div.appendChild(about_div);
+
+    document.addEventListener("keyup", catch_escape);
+}
+
+function close_preferences()
+{
+    let guide_div = document.getElementById("aguide");
+    let prefs_div = document.getElementById("prefs");
+
+    if(prefs_div) {
+        document.removeEventListener("keyup", catch_escape);
+        guide_div.removeChild(prefs_div);
+    }
+}
+
+function catch_escape(event)
+{
+    if(event.code === "Escape") {
+        browser.runtime.sendMessage({method: "closePrefs"});
+    }
 }
 
 /******* token buf functions *******/

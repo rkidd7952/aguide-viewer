@@ -19,20 +19,31 @@
     <https://www.gnu.org/licenses/>.
 -->
 <html>
-<meta charset="ISO-8859-1" />
 <head>
-  <title>AGuide Viewer</title>
+  <title>Preferences</title>
   <link rel="stylesheet" href="aguide.css" type="text/css">
-  <style>
-    span.bookmarklet {
-        float: right;
-        margin-right: 1.5em;
-    }
-  </style>
 </head>
 <body>
 
-  <script src="aguide.js"></script>
+<div id="prefs-dlg" hidden>
+  AmigaGuide Detection<br>
+  <input type="checkbox" id="file-ext">
+  <label for="file-ext" class="has-help">Detect by filename</label>
+  <div class="help">Intercept downloads of files with .guide extension</div>
+  <br>
+  <input type="checkbox" id="file-sig">
+  <label for="file-sig" class="has-help">Detect by signature</label>
+  <div class="help">Inspect each downloaded file and interpret as
+  AmigaGuide if file starts '@database'</div>
+  <br>
+<br><br><br><br>
+  <div class="center">
+    <button type="button" class="button" id="save-button">Save</button>&nbsp;
+    <button type="button" class="button" id="cancel-button">Cancel</button>
+  </div>
+</div>
+
+<script src="prefs.js"></script>
 
 </body>
 </html> 
