@@ -33,8 +33,6 @@
             body: document.firstChild.textContent,
             encoding: document.inputEncoding
         }, function(resp) {
-            console.log("wrote local storage: value = " + document.firstChild.textContent);
-            console.log("encoding = " + document.inputEncoding);
             const aguide_url = browser.runtime.getURL("aguide.html");
             const p = new URLSearchParams();
             // storage is a flag telling the viewer to read from local storage.
@@ -43,5 +41,8 @@
             p.set("parent_ref", encodeURI(parent_ref));
             window.location.replace(aguide_url + "?" + p.toString());
         });
+        return true;
     }
+
+    return false;
 })();
