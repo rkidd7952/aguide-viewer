@@ -41,5 +41,8 @@
             p.set("parent_ref", encodeURI(parent_ref));
             window.location.replace(aguide_url + "?" + p.toString());
         });
+        return true;
     }
+
+    return false;
 })();

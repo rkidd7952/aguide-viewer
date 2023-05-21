@@ -48,9 +48,21 @@ function handle_on_headers_received(details)
     }
 }
 
-function open_page()
+function show_aguide_viewer()
 {
     browser.tabs.create({ url: get_aguide_url() });
+}
+
+function open_page(tab, on_click_data)
+{
+    browser.scripting.executeScript({
+        files: ["scan.js"],
+        target: {tabId: tab.id}
+    }).then((results) => {
+        if(!results[0] || !results[0].result) {
+            show_aguide_viewer();
+        }
+    }, reason => show_aguide_viewer());
 }
 
 function handle_message(request, sender, sendResponse)
