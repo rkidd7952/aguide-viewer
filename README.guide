@@ -28,6 +28,7 @@ See the end of the file for license conditions.
 @{" Introduction " Link "Introduction"}
 @{" Installation " Link "Installation"}
 @{" Usage " Link "Usage"}
+@{" Preferences " Link "Preferences"}
 @{" Limitations " Link "Limitations"}
 @{" Building the extension " Link "Building"}
 @{" Contact " Link "Contact"}
@@ -41,10 +42,9 @@ Introduction
 
 AGuide Viewer is an open source reader for AmigaGuide documents
 implemented as a browser extension.  It works with Firefox* and
-Chromium** on all platforms.
+Chromium* on all platforms.
 
 * Tested on Windows and Linux
-** Tested on Linux
 
 @endnode
 
@@ -80,7 +80,7 @@ Usage
 The extension installs hooks to detect downloads of files with a
 .guide filename extension or that start with the '@database' sequence.
 AmigaGuide documents downloaded from the web are automatically
-rendered in the browser.
+rendered in the browser.  This behavior can be configured; see below.
 
 The extension supports viewing local files.  Open a local file using
 any method supported by the browser, entering a file:/// URL, use the
@@ -88,12 +88,32 @@ File->Open menu option, or use the operating system's file manager to
 open a .guide file with the browser.
 
 Alternatively, AGuide Viewer can be launched by clicking the AGV icon
-in the browser's toolbar.  The interface mimics that of the AmigaGuide
-or MultiView utilities.
+in the browser's toolbar.  If the current page is an AmigaGuide
+document, it will be displayed.  Otherwise, a new tab will open with
+an empty viewer.  The interface mimics that of the AmigaGuide or
+MultiView utilities.
 
 Navigation buttons (Contents, Retrace, Browse) work as they do in the
 native Amiga readers.  The browser's native history commands also work
 as normal.
+
+@endnode
+
+@node "Preferences" Preferences
+
+Click the Preferences... button in the toolbar to change settings.
+
+@{b}AmigaGuide Detection@{ub}
+
+* Detect by filename: Detect downloads of files with a filename
+  extension of .guide and display in the viewer.
+
+* Detect by signature: Inspect the first 9 bytes of each download and
+  display in the viewer if the file starts with '@database'.
+
+If all auto-detect options are disabled, AmigaGuide documents will
+load as plain text.  Click the AGV icon in the toolbar to render the
+document as hypertext.
 
 @endnode
 
