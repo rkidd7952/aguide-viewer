@@ -96,7 +96,7 @@ function init_page(show_open)
 
 function handle_message(request, sender, sendResponse)
 {
-    if(request.method === "closePrefs") {
+    if(request.method === "removePrefsWindow") {
         close_preferences();
         sendResponse({});
     }
@@ -862,6 +862,8 @@ function show_preferences()
         "src": browser.runtime.getURL("prefs.html"),
         "title": "Preferences"}));
     guide_div.appendChild(about_div);
+
+    document.addEventListener("keyup", catch_escape);
 }
 
 function close_preferences()
@@ -870,7 +872,15 @@ function close_preferences()
     let prefs_div = document.getElementById("prefs");
 
     if(prefs_div) {
+        document.removeEventListener("keyup", catch_escape);
         guide_div.removeChild(prefs_div);
+    }
+}
+
+function catch_escape(event)
+{
+    if(event.code === "Escape") {
+        browser.runtime.sendMessage({method: "closePrefs"});
     }
 }
 

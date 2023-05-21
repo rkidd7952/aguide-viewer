@@ -24,19 +24,42 @@ if(typeof browser === "undefined") {
 
 function main()
 {
-    document.getElementById("cancel-button").addEventListener("click", () => {
-        browser.runtime.sendMessage({method: "closePrefs"});
-    });
+    document.getElementById("cancel-button").addEventListener("click", close_window);
 
     document.getElementById("save-button").addEventListener("click", () => {
         save_config();
-        browser.runtime.sendMessage({method: "closePrefs"});
+        close_window();
     });
 
     browser.runtime.sendMessage({method: "loadPrefs"}).then(set_config);
+    browser.runtime.onMessage.addListener(handle_message);
+
+    document.addEventListener("keyup", catch_escape);
 
     let dlg = document.getElementById("prefs-dlg")
     dlg.hidden = false;
+}
+
+function handle_message(request, sender, sendResponse)
+{
+    if(request.method === "closePrefs") {
+        close_window();
+        sendResponse({});
+    }
+}
+
+function close_window()
+{
+    browser.runtime.onMessage.removeListener(handle_message);
+    document.removeEventListener("keyup", catch_escape);
+    browser.runtime.sendMessage({method: "removePrefsWindow"});
+}
+
+function catch_escape(event)
+{
+    if(event.code === "Escape") {
+        close_window();
+    }
 }
 
 function set_config(prefs)
