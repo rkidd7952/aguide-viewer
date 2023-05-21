@@ -9,19 +9,10 @@
       "background.js"
     ]
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "*://*/*",
-        "file:///*"
-      ],
-      "js": [
-        "scan.js"
-      ]
-    }
-  ],
   "content_security_policy": "script-src 'self'; object-src 'self';",
   "permissions": [
+    "scripting",
+    "storage",  
     "webRequest",
     "webRequestBlocking",
     "<all_urls>",
@@ -29,7 +20,8 @@
   ],
   "web_accessible_resources": [
     "aguide.html",
-    "README.guide"
+    "README.guide",
+    "prefs.html"
   ],
   "icons": {
     "16": "icon16x16.png",
