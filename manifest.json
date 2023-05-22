@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "AGuide Viewer",
-  "version": "0.1",
+  "version": "0.2",
   "author": "Robert Kidd",
   "description": "Viewer for AmigaGuide documents",
   "homepage_url": "https://github.com/rkidd7952/aguide-viewer",
@@ -13,7 +13,7 @@
   "content_security_policy": "script-src 'self'; object-src 'self';",
   "permissions": [
     "scripting",
-    "storage",  
+    "storage",
     "webRequest",
     "webRequestBlocking",
     "<all_urls>",
