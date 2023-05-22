@@ -35,7 +35,7 @@ Firefox Add-on site to make installation easier.
 
 
 
-[ ] Bug 5: Add tooltip to links that require more than a click to open
+[X] Bug 5: Add tooltip to links that require more than a click to open
 
 https://github.com/rkidd7952/aguide-viewer/issues/5
 
@@ -49,6 +49,8 @@ The viewer should add a tool tip to explain this when hovering over an
 affected link.
 
 To reproduce, see testdata/external_links.guide
+
+Fixed in v0.2
 
 
 
@@ -89,6 +91,8 @@ I hope I didn't somehow overlook that this issue has already been reported.
 What I noticed: If I enter ".guide" in the search term on duckduckgo.com or Google or actually in any other search form on the site and send the request, the extension is automatically activated. I'm using Firefox 113.0.1 (64-bit) on Linux Mint.
 
 By the way: Great plugin, I've been looking for something like this for a long, long time. Thank you so much for the great work! :)
+
+Fixed in v0.2
 
 
 
