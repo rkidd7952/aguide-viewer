@@ -1,0 +1,11 @@
+v0.2 2023-May-21
+ - The extension is less aggressive when intercepting URLs that
+   include the string .guide.  The detection methods are now
+   configurable and can be turned off if they cause problems.  Please
+   report an issue if the default configuration causes a problem.  All
+   auto detection can be turned off and the extension manually
+   triggered if desired.
+
+ - Links that require more than a simple click to open now have
+   tooltips explaining what to do.
+
