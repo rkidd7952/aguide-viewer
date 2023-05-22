@@ -56,6 +56,11 @@ div.help {
     transition-delay: 1s;
 }
 
+.has-help:hover + div.fasthelp {
+    visibility: visible;
+    transition-delay: 0s;
+}
+
 div.prefs {
     overflow: hidden;
     height: 13em;

@@ -633,7 +633,9 @@ function render_brace_cmd(aguide, cmd, render_state)
             add_text(cur_crsr(render_state.crsr_stack), orig);
             return;
         }
-        cur_crsr(render_state.crsr_stack).appendChild(link);
+        for(const i in link) {
+            cur_crsr(render_state.crsr_stack).appendChild(link[i]);
+        }
         return;
     }
 
@@ -705,10 +707,26 @@ function render_link(ps, link_text)
                                   "style": "width: " + link_text_len + "em;"});
         a.onclick = handle_click_link;
         a.textContent = " " + link_text + " ";
-        return a;
-    }
+        const elems = [a];
 
+        // Add tooltip if the link can't open naturally
+        if(browser_is_firefox() && link.startsWith("file:///")) {
+            a.classList.add("has-help");
+
+            let div = new_element_with_text("div", {"class": "help fasthelp"},
+                                            "Direct links to other local files are blocked in Firefox.  To open this link, right click, open in new tab, select the URL bar and press return.");
+            elems.push(div);
+        }
+
+        return elems;
+    }
+    
     return null;
+}
+
+function browser_is_firefox()
+{
+    return navigator.userAgent.toLowerCase().includes("firefox");
 }
 
 function apply_style(render_state, cmd)
