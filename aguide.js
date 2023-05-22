@@ -702,8 +702,8 @@ function render_link(ps, link_text)
 
         let a = new_element("a", {"class": "ag",
                                   "href": link,
-                                  "onclick": handle_click_link,
                                   "style": "width: " + link_text_len + "em;"});
+        a.onclick = handle_click_link;
         a.textContent = " " + link_text + " ";
         return a;
     }
