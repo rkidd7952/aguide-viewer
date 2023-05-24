@@ -25,12 +25,15 @@ Firefox (development build):
  - Load aguide.xpi or manifest.json
 
 Chromium:
+ - Chrome requires loading an unpacked extension.  You can either clone the git repo or download and unzip the .xpi file.
+ - Clone git repo:
+   - git clone https://github.com/rkidd7952/aguide-viewer
  - Unzip aguide.xpi
-   mkdir aguide-unzipped
-   cd aguide-unzipped
-   unzip ../aguide.xpi
+   - mkdir aguide-viewer
+   - cd aguide-viewer
+   - unzip ../aguide.xpi
  - Choose More tools -> Extensions
- - Load aguide-unzipped as an unpacked extension
+ - Load the aguide-viewer directory as an unpacked extension
  
 # Usage
 
