@@ -23,7 +23,13 @@
         var browser = chrome;
     }
 
-    let t = document.firstChild.textContent.slice(0, 9);
+    let t = "";
+    try {
+        t = document.firstChild.textContent.slice(0, 9);
+    } catch(error) {
+        return false;
+    }
+
     if(t.toLowerCase() === "@database") {
         console.log("smells like amigaguide");
 
