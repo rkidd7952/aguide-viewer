@@ -1,3 +1,7 @@
+**This project is moving to Sourceforge.  Find it at https://aguide-viewer.sourceforge.io/.**
+
+---
+
 AGuide Viewer
 Copyright 2023 Robert Kidd
 
