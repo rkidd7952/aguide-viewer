@@ -41,7 +41,7 @@ aguide.xpi: $(SRCS)
 dist: clean tag
 	mkdir -p distfiles
 	make aguide.xpi
-	cp aguide.xpi distfiles/aguide-$(VERSION).xpi
+	cp aguide.xpi distfiles/aguide-$(VERSION)-unsigned.xpi
 	git archive -o distfiles/aguide-$(VERSION).tar.gz "v$(VERSION)"
 	git archive -o distfiles/aguide-$(VERSION).zip "v$(VERSION)"
 	cp CHANGELOG distfiles
