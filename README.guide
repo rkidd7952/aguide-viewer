@@ -53,10 +53,10 @@ Chromium* on all platforms.
 Installation
 
 Firefox:
- - Download the release build from https://sourceforge.net/projects/aguide-viewer/files/v0.2/aguide-0.2.xpi/download
+ - Download the release build from https://sourceforge.net/projects/aguide-viewer/files/v0.3/aguide-0.3.xpi/download
  - Tools > Add-ons
  - (Gear icon) > Install Add-on From File...
- - Choose aguide-0.2.xpi
+ - Choose aguide-0.3.xpi
 
 Firefox (development build):
  - Browse to about:debugging#/runtime/this-firefox
