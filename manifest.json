@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "AGuide Viewer",
-  "version": "0.2",
+  "version": "0.3",
   "author": "Robert Kidd",
   "description": "Viewer for AmigaGuide documents",
   "homepage_url": "https://aguide-viewer.sourceforge.io/",
