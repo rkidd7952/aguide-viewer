@@ -26,6 +26,14 @@ body {
     text-align: center;
 }
 
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
 div.about {
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;

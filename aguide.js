@@ -497,8 +497,10 @@ function cur_crsr(st) {
 function render_html(aguide, node)
 {
     let html = new_element("div", {});
+    let jdiv = new_element("div", {"class": "j"});
+    html.appendChild(jdiv);
     // crsr is the current element to which unmarked text is appended.
-    let crsr = html;
+    let crsr = jdiv;
 
     let ps = new_node_tbuf(aguide, node);
 
@@ -521,7 +523,7 @@ function render_html(aguide, node)
 
     let render_state = {
         style: [],
-        crsr_stack: [html]
+        crsr_stack: [html, jdiv]
     };
 
     while(!at_eof(ps2)) {
@@ -627,6 +629,23 @@ function render_brace_cmd(aguide, cmd, render_state)
             }
             return;
         }
+    } else if(tlc === "jcenter" || tlc === "jleft" || tlc === "jright") {
+        let jdiv = new_element("div", {"class": "j " + tlc.slice(1)});
+        apply_justification(render_state, jdiv);
+        return;
+    } else if(tlc === "lindent") {
+        let indent = get_next_token(ps, false);
+        if(indent) {
+            /* find jdiv, clone, add indent padding */
+            for(i = render_state.crsr_stack.length - 1; i > 0; --i) {
+                if(render_state.crsr_stack[i].classList.contains("j")) {
+                    let jdiv = render_state.crsr_stack[i].cloneNode();
+                    jdiv.style.paddingLeft = indent.token + "em";
+                    apply_justification(render_state, jdiv);
+                    return;
+                }
+            }
+        }
     } else if(tlc[0] === "\"") {
         let link = render_link(ps, t.token);
         if(!link) {
@@ -641,6 +660,28 @@ function render_brace_cmd(aguide, cmd, render_state)
 
     add_text(cur_crsr(render_state.crsr_stack), orig);
     return;
+}
+
+function apply_justification(render_state, jdiv)
+{
+    /*
+      pop crsr_stack until we find div with class "j", save popped to P
+      pop div, push div with new justfication
+      for each element in P, clone element
+    */
+    let spans = []
+    while(!cur_crsr(render_state.crsr_stack).classList.contains("j")) {
+        spans.push(render_state.crsr_stack.pop());
+    }
+    /* Pop justification div */
+    render_state.crsr_stack.pop();
+    cur_crsr(render_state.crsr_stack).appendChild(jdiv);
+    render_state.crsr_stack.push(jdiv);
+    while(spans.length > 0) {
+        let c = spans.pop().cloneNode();
+        cur_crsr(render_state.crsr_stack).appendChild(c);
+        render_state.crsr_stack.push(c);
+    }
 }
 
 function render_link(ps, link_text)
