@@ -627,7 +627,7 @@ function render_brace_cmd(aguide, cmd, render_state)
             }
             return;
         }
-    } else {
+    } else if(tlc[0] === "\"") {
         let link = render_link(ps, t.token);
         if(!link) {
             add_text(cur_crsr(render_state.crsr_stack), orig);
@@ -652,7 +652,11 @@ function render_link(ps, link_text)
 
     let t = get_next_token(ps, false);
     if(!t) {
-        return null;
+        let a = new_element_with_text("a",
+                                      {"class": "ag",
+                                       "style": "width: " + link_text_len + "em;"},
+                                      " " + link_text + " ");
+        return [a];
     }
     let command = t.token.toLowerCase();
 
@@ -702,11 +706,12 @@ function render_link(ps, link_text)
             link = "#" + encodeURI(name);
         }
 
-        let a = new_element("a", {"class": "ag",
-                                  "href": link,
-                                  "style": "width: " + link_text_len + "em;"});
+        let a = new_element_with_text("a",
+                                      {"class": "ag",
+                                       "href": link,
+                                       "style": "width: " + link_text_len + "em;"},
+                                      " " + link_text + " ");
         a.onclick = handle_click_link;
-        a.textContent = " " + link_text + " ";
         const elems = [a];
 
         // Add tooltip if the link can't open naturally
@@ -721,7 +726,11 @@ function render_link(ps, link_text)
         return elems;
     }
     
-    return null;
+    let a = new_element_with_text("a",
+                                  {"class": "ag",
+                                   "style": "width: " + link_text_len + "em;"},
+                                  " " + link_text + " ");
+    return [a];
 }
 
 function browser_is_firefox()
