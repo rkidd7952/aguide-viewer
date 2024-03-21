@@ -250,7 +250,9 @@ function parse_aguide(ps)
         { cmd: "@master", handler: finish_cmd_master },
         { cmd: "@node", handler: finish_cmd_node },
         { cmd: "@index", handler: finish_cmd_index },
-        { cmd: "@remark", handler: finish_cmd_remark }
+        { cmd: "@remark", handler: finish_cmd_remark },
+        { cmd: "@wordwrap", handler: nop_global },
+        { cmd: "@smartwrap", handler: nop_global }
     ];
 
     let e = true;
@@ -292,6 +294,10 @@ function new_aguide(ps)
         text: ps.text,
         nodes: []
     };
+}
+
+function nop_global(ps, token, aguide) {
+    return true;
 }
 
 /* token is @master, parse path
@@ -507,7 +513,9 @@ function render_html(aguide, node)
     const cmd_handlers = [
         { cmd: "@toc", handler: handle_toc_next_prev },
         { cmd: "@next", handler: handle_toc_next_prev },
-        { cmd: "@prev", handler: handle_toc_next_prev }
+        { cmd: "@prev", handler: handle_toc_next_prev },
+        { cmd: "@wordwrap", handler: nop_node },
+        { cmd: "@smartwrap", handler: nop_node }
     ];
     
     /* Convert any space chars at the beginning of a line to non-breaking */
@@ -579,6 +587,11 @@ function handle_toc_next_prev(aguide, node, cmd, ps)
     } else if(cmd === "@prev") {
         node.prev = n;
     }
+    return "";
+}
+
+function nop_node(aguide, node, cmd, ps)
+{
     return "";
 }
 
