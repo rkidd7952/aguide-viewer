@@ -652,7 +652,7 @@ function render_brace_cmd(aguide, cmd, render_state)
         let indent = get_next_token(ps, false);
         if(indent) {
             /* find jdiv, clone, add indent padding */
-            for(i = render_state.crsr_stack.length - 1; i > 0; --i) {
+            for(let i = render_state.crsr_stack.length - 1; i > 0; --i) {
                 if(render_state.crsr_stack[i].classList.contains("j")) {
                     let jdiv = render_state.crsr_stack[i].cloneNode();
                     jdiv.style.paddingLeft = indent.token + "em";
