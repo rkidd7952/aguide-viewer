@@ -285,12 +285,14 @@ function new_aguide(ps)
 
     console.info("Reading AmigaGuide: found @database");
 
-    let db_name = get_next_token(ps, false);
-    if(!db_name) {
-        return null;
+    let db_name = get_next_token(ps, true);
+    let db_name_str = "";
+    if(db_name && db_name.token[0] !== "@") {
+        db_name_str = db_name.token;
+        tbuf_consume_token(ps, db_name);
     }
     return {
-        database: db_name.token,
+        database: db_name_str,
         text: ps.text,
         nodes: []
     };
