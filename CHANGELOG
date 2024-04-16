@@ -1,9 +1,12 @@
+v0.5 2024-Apr-24
+ - Upgrade signature for FF 127
+
 v0.4 2024-Mar-21
  - Render a link button even if the link has no target.  Some guides use
    this as a highlight
  - Implement justification commands jcenter, jleft, jright
  - Implement indent command lindent
- - The name parameter to the @database tag is optional.  
+ - The name parameter to the @database tag is optional.
 
 v0.3 2023-Sep-26
  - Handle an exception that could occur when scanning a page to
