@@ -64,13 +64,21 @@ function catch_escape(event)
 
 function set_config(prefs)
 {
+    document.getElementById("theme_os3").checked = prefs.theme == "os3";
+    document.getElementById("theme_native").checked = prefs.theme == "native";
     document.getElementById("file-ext").checked = prefs.detect_ext;
     document.getElementById("file-sig").checked = prefs.detect_sig;
 }
 
 function save_config()
 {
+    let theme = "os3";
+    if(document.getElementById("theme_native").checked) {
+        theme = "native";
+    }
+
     let prefs = {
+        theme: theme,
         detect_ext: document.getElementById("file-ext").checked,
         detect_sig: document.getElementById("file-sig").checked
     };

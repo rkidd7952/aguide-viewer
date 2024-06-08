@@ -20,6 +20,8 @@
 
 const NBSP_UC = "\u00A0";
 
+var theme = "os3";
+
 if(typeof browser === "undefined") {
     var browser = chrome;
 }
@@ -28,8 +30,11 @@ function main()
 {
     browser.runtime.onMessage.addListener(handle_message);
 
-    init_page(true);
+    init_page(true).then(continue_main);
+}
 
+function continue_main()
+{
     let params = new URLSearchParams(window.location.search);
     let guideEnc = params.get("guide");
     let storage_name_enc = params.get("storage");
@@ -74,15 +79,19 @@ function get_guide_url()
 
 function init_page(show_open)
 {
+    return browser.runtime.sendMessage({method: "loadPrefs"})
+        .then(set_config)
+        .then((prefs) => continue_init_page(show_open, prefs));
+}
+
+function continue_init_page(show_open, prefs)
+{
     let b = document.getElementsByTagName("body");
     let body = null;
 
-    if(b.length > 1) {
-        body = b[0];
-    } else {
-        body = document.createElement("body");
-        document.body = body;
-    }
+    body = document.createElement("body");
+    body.classList.add(theme);
+    document.body = body;
     
     let body_div = document.createElement("div");
     body_div.appendChild(make_toolbar(show_open));
@@ -92,6 +101,20 @@ function init_page(show_open)
 
     addEventListener("popstate", handle_popstate);
     addEventListener("hashchange", display_node_hash);
+
+    return new Promise(resolve => resolve());
+}
+
+function set_config(prefs)
+{
+    theme = prefs.theme ? prefs.theme : "os3";
+
+    let b = document.getElementsByTagName("body");
+    if(b.length > 0) {
+        b[0].className = theme;
+    }
+
+    return new Promise(resolve => resolve(prefs));
 }
 
 function handle_message(request, sender, sendResponse)
@@ -99,6 +122,8 @@ function handle_message(request, sender, sendResponse)
     if(request.method === "removePrefsWindow") {
         close_preferences();
         sendResponse({});
+    } else if(request.method === "savePrefs") {
+        set_config(request.prefs);
     }
 }
 

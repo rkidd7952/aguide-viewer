@@ -88,15 +88,29 @@ function handle_message(request, sender, sendResponse)
     }
 }
 
-function default_prefs()
+function default_prefs(prefs)
 {
-    return {detect_ext: true, detect_sig: true};
+    if(!prefs) {
+        prefs = {};
+    }
+
+    if(!prefs.hasOwnProperty('detect_ext')) {
+        prefs.detect_ext = true;
+    }
+    if(!prefs.hasOwnProperty('detect_sig')) {
+        prefs.detect_sig = true;
+    }
+    if(!prefs.hasOwnProperty('theme')) {
+        prefs.theme = "os3";
+    }
+
+    return prefs;
 }
 
 function load_prefs()
 {
     return browser.storage.local.get("prefs").then(
-        prefs => prefs.prefs ? prefs.prefs : default_prefs());
+        prefs => default_prefs(prefs.prefs));
 }
 
 function handle_prefs_update(prefs)
