@@ -1,3 +1,19 @@
+v0.5 2024-Apr-24
+ - Upgrade signature for FF 127
+
+v0.4 2024-Mar-21
+ - Render a link button even if the link has no target.  Some guides use
+   this as a highlight
+ - Implement justification commands jcenter, jleft, jright
+ - Implement indent command lindent
+ - The name parameter to the @database tag is optional.
+
+v0.3 2023-Sep-26
+ - Handle an exception that could occur when scanning a page to
+   determine if it is an Amigaguide document
+
+ - Moving project from github to sourceforge
+
 v0.2 2023-May-21
  - The extension is less aggressive when intercepting URLs that
    include the string .guide.  The detection methods are now
@@ -8,4 +24,3 @@ v0.2 2023-May-21
 
  - Links that require more than a simple click to open now have
    tooltips explaining what to do.
-

@@ -34,13 +34,23 @@ SRCS=aguide.html \
 aguide.xpi: $(SRCS)
 	zip $@ $^
 
+# make VERSION=vers [FORCE=-f] dist
+# Before make dist
+#   Update version in README.md and README.guide
+#   Update CHANGELOG
 dist: clean tag
+	mkdir -p distfiles
 	make aguide.xpi
+	cp aguide.xpi distfiles/aguide-$(VERSION)-unsigned.xpi
+	git archive -o distfiles/aguide-$(VERSION).tar.gz "v$(VERSION)"
+	git archive -o distfiles/aguide-$(VERSION).zip "v$(VERSION)"
+	cp CHANGELOG distfiles
 
+# make VERSION=vers [FORCE=-f] tag
 GS=git status --porcelain --untracked-files=no
 tag:
 	@test -n "$(VERSION)" || (echo "usage: make tag VERSION=vers" && false)
-	@test -z "`$(GS)`" -o -n "$(DIRTY_OK)" || (echo "Uncommitted changes exist in tree; set DIRTY_OK to bypass" && $(GS))
+	@test -z "`$(GS)`" -o -n "$(DIRTY_OK)" || (echo "Uncommitted changes exist in tree; set DIRTY_OK to bypass" && false)
 	jq -M '.version = "$(VERSION)"' manifest.json > manifest.json.tmp && mv manifest.json.tmp manifest.json
 	test -z "`git diff manifest.json`" || git commit -m "Tagging version $(VERSION)" manifest.json
 	git tag $(FORCE) -m "Tagging version $(VERSION)" "v$(VERSION)"
@@ -48,5 +58,6 @@ tag:
 
 clean:
 	-rm -f aguide.xpi
+	-rm -f distfiles
 
 .PHONY: clean tag dist

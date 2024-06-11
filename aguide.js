@@ -250,7 +250,9 @@ function parse_aguide(ps)
         { cmd: "@master", handler: finish_cmd_master },
         { cmd: "@node", handler: finish_cmd_node },
         { cmd: "@index", handler: finish_cmd_index },
-        { cmd: "@remark", handler: finish_cmd_remark }
+        { cmd: "@remark", handler: finish_cmd_remark },
+        { cmd: "@wordwrap", handler: nop_global },
+        { cmd: "@smartwrap", handler: nop_global }
     ];
 
     let e = true;
@@ -283,15 +285,21 @@ function new_aguide(ps)
 
     console.info("Reading AmigaGuide: found @database");
 
-    let db_name = get_next_token(ps, false);
-    if(!db_name) {
-        return null;
+    let db_name = get_next_token(ps, true);
+    let db_name_str = "";
+    if(db_name && db_name.token[0] !== "@") {
+        db_name_str = db_name.token;
+        tbuf_consume_token(ps, db_name);
     }
     return {
-        database: db_name.token,
+        database: db_name_str,
         text: ps.text,
         nodes: []
     };
+}
+
+function nop_global(ps, token, aguide) {
+    return true;
 }
 
 /* token is @master, parse path
@@ -497,15 +505,19 @@ function cur_crsr(st) {
 function render_html(aguide, node)
 {
     let html = new_element("div", {});
+    let jdiv = new_element("div", {"class": "j"});
+    html.appendChild(jdiv);
     // crsr is the current element to which unmarked text is appended.
-    let crsr = html;
+    let crsr = jdiv;
 
     let ps = new_node_tbuf(aguide, node);
 
     const cmd_handlers = [
         { cmd: "@toc", handler: handle_toc_next_prev },
         { cmd: "@next", handler: handle_toc_next_prev },
-        { cmd: "@prev", handler: handle_toc_next_prev }
+        { cmd: "@prev", handler: handle_toc_next_prev },
+        { cmd: "@wordwrap", handler: nop_node },
+        { cmd: "@smartwrap", handler: nop_node }
     ];
     
     /* Convert any space chars at the beginning of a line to non-breaking */
@@ -521,7 +533,7 @@ function render_html(aguide, node)
 
     let render_state = {
         style: [],
-        crsr_stack: [html]
+        crsr_stack: [html, jdiv]
     };
 
     while(!at_eof(ps2)) {
@@ -580,6 +592,11 @@ function handle_toc_next_prev(aguide, node, cmd, ps)
     return "";
 }
 
+function nop_node(aguide, node, cmd, ps)
+{
+    return "";
+}
+
 function render_brace_cmd(aguide, cmd, render_state)
 {
     const orig = "@{" + cmd + "}";
@@ -627,7 +644,24 @@ function render_brace_cmd(aguide, cmd, render_state)
             }
             return;
         }
-    } else {
+    } else if(tlc === "jcenter" || tlc === "jleft" || tlc === "jright") {
+        let jdiv = new_element("div", {"class": "j " + tlc.slice(1)});
+        apply_justification(render_state, jdiv);
+        return;
+    } else if(tlc === "lindent") {
+        let indent = get_next_token(ps, false);
+        if(indent) {
+            /* find jdiv, clone, add indent padding */
+            for(let i = render_state.crsr_stack.length - 1; i > 0; --i) {
+                if(render_state.crsr_stack[i].classList.contains("j")) {
+                    let jdiv = render_state.crsr_stack[i].cloneNode();
+                    jdiv.style.paddingLeft = indent.token + "em";
+                    apply_justification(render_state, jdiv);
+                    return;
+                }
+            }
+        }
+    } else if(tlc[0] === "\"") {
         let link = render_link(ps, t.token);
         if(!link) {
             add_text(cur_crsr(render_state.crsr_stack), orig);
@@ -643,6 +677,28 @@ function render_brace_cmd(aguide, cmd, render_state)
     return;
 }
 
+function apply_justification(render_state, jdiv)
+{
+    /*
+      pop crsr_stack until we find div with class "j", save popped to P
+      pop div, push div with new justfication
+      for each element in P, clone element
+    */
+    let spans = []
+    while(!cur_crsr(render_state.crsr_stack).classList.contains("j")) {
+        spans.push(render_state.crsr_stack.pop());
+    }
+    /* Pop justification div */
+    render_state.crsr_stack.pop();
+    cur_crsr(render_state.crsr_stack).appendChild(jdiv);
+    render_state.crsr_stack.push(jdiv);
+    while(spans.length > 0) {
+        let c = spans.pop().cloneNode();
+        cur_crsr(render_state.crsr_stack).appendChild(c);
+        render_state.crsr_stack.push(c);
+    }
+}
+
 function render_link(ps, link_text)
 {
     link_text = str_strip_quote(link_text);
@@ -652,7 +708,11 @@ function render_link(ps, link_text)
 
     let t = get_next_token(ps, false);
     if(!t) {
-        return null;
+        let a = new_element_with_text("a",
+                                      {"class": "ag",
+                                       "style": "width: " + link_text_len + "em;"},
+                                      " " + link_text + " ");
+        return [a];
     }
     let command = t.token.toLowerCase();
 
@@ -702,11 +762,12 @@ function render_link(ps, link_text)
             link = "#" + encodeURI(name);
         }
 
-        let a = new_element("a", {"class": "ag",
-                                  "href": link,
-                                  "style": "width: " + link_text_len + "em;"});
+        let a = new_element_with_text("a",
+                                      {"class": "ag",
+                                       "href": link,
+                                       "style": "width: " + link_text_len + "em;"},
+                                      " " + link_text + " ");
         a.onclick = handle_click_link;
-        a.textContent = " " + link_text + " ";
         const elems = [a];
 
         // Add tooltip if the link can't open naturally
@@ -721,7 +782,11 @@ function render_link(ps, link_text)
         return elems;
     }
     
-    return null;
+    let a = new_element_with_text("a",
+                                  {"class": "ag",
+                                   "style": "width: " + link_text_len + "em;"},
+                                  " " + link_text + " ");
+    return [a];
 }
 
 function browser_is_firefox()
