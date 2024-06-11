@@ -46,7 +46,7 @@ body.native {
     font-family: monospace;
     --aguide-text-color: revert;
     --aguide-background-color: revert;
-    --aguide-fill-color: revert;
+    --aguide-fill-color: #dddddd;
     --aguide-highlight-color: revert;
     --aguide-shine-color: revert;
     --aguide-shadow-color: revert;
@@ -58,10 +58,10 @@ body.native {
     --aguide-link-text-color: revert;
     --aguide-link-text-decoration: revert;
 
-    --aguide-button-border-top-left: revert;
-    --aguide-button-border-bottom-right: revert;
-    --aguide-button-border-top-left-active: revert;
-    --aguide-button-border-bottom-right-active: revert;
+    --aguide-button-border-top-left: 1px solid var(--aguide-text-color, );
+    --aguide-button-border-bottom-right: 1px solid var(--aguide-text-color, );
+    --aguide-button-border-top-left-active: 1px solid var(--aguide-text-color, );
+    --aguide-button-border-bottom-right-active: 1px solid var(--aguide-text-color, );
     --aguide-button-text-color: revert;
     --aguide-button-text-decoration: revert;
 }
@@ -79,10 +79,10 @@ body.native {
 }
 
 div.about {
-    border-top: 2px solid var(--aguide-shine-color);
-    border-left: 2px solid var(--aguide-shine-color);
-    border-right: 2px solid var(--aguide-shadow-color);
-    border-bottom: 2px solid var(--aguide-shadow-color);
+    border-top: var(--aguide-button-border-top-left);
+    border-left: var(--aguide-button-border-top-left);
+    border-right: var(--aguide-button-border-bottom-right);
+    border-bottom: var(--aguide-button-border-bottom-right);
     padding: 10px;
     width: 50%;
     height: 50%;
@@ -129,7 +129,7 @@ a.ag {
     border-left: var(--aguide-link-border-top-left);
     border-right: var(--aguide-link-border-bottom-right);
     border-bottom: var(--aguide-link-border-bottom-right);
-    color: var(--aguide-link-text-color);
+    color: var(--aguide-link-text-color, revert);
     text-decoration: var(--aguide-link-text-decoration);
     line-height: 1.4;
     display: inline-block;
