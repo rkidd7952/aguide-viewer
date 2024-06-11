@@ -1,3 +1,6 @@
+v0.6.preview1 2024-Jun-24
+ - Add a configurable theme - either OS 3 or native browser
+
 v0.5 2024-Apr-24
  - Upgrade signature for FF 127
 
