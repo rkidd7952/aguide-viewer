@@ -1,6 +1,6 @@
 @database README.guide
 
-@rem Copyright 2023 Robert Kidd
+@rem Copyright 2023-2024 Robert Kidd
 
 @rem This file is part of AGuide Viewer.
 
@@ -21,7 +21,7 @@
 @node main "README.guide"
 
 AGuide Viewer
-Copyright 2023 Robert Kidd
+Copyright 2023-2024 Robert Kidd
 
 See the end of the file for license conditions.
 

@@ -1,5 +1,5 @@
 /*
-  Copyright 2023 Robert Kidd
+  Copyright 2023-2024 Robert Kidd
 
   This file is part of AGuide Viewer.
 
@@ -902,7 +902,7 @@ function toggle_about()
     about_div.appendChild(new_element_with_text("p", {"class": "center"},
                                                 "Version " + browser.runtime.getManifest().version));
     about_div.appendChild(new_element_with_text("p", {"class": "center"},
-                                                "Copyright 2023 Robert Kidd"));
+                                                "Copyright 2023-2024 Robert Kidd"));
     let p = new_element("p", {"class": "center"});
     p.appendChild(
         new_element_with_text("a",

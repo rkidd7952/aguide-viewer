@@ -1,4 +1,4 @@
-# Copyright 2023 Robert Kidd
+# Copyright 2023-2024 Robert Kidd
 #
 # This file is part of AGuide Viewer.
 #

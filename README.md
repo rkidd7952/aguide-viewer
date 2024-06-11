@@ -3,7 +3,7 @@
 ---
 
 AGuide Viewer
-Copyright 2023 Robert Kidd
+Copyright 2023-2024 Robert Kidd
 
 See the end of the file for license conditions.
 
