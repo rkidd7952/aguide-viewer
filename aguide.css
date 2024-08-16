@@ -45,7 +45,7 @@ body.os3 {
 body.native {
     font-family: monospace;
     --aguide-text-color: revert;
-    --aguide-background-color: revert;
+    --aguide-background-color: white;
     --aguide-fill-color: #dddddd;
     --aguide-highlight-color: revert;
     --aguide-shine-color: revert;
