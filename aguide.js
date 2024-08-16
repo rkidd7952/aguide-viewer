@@ -727,7 +727,6 @@ function apply_justification(render_state, jdiv)
 function render_link(ps, link_text)
 {
     link_text = str_strip_quote(link_text);
-    let link_text_len = link_text.length;
     link_text = str_translate(link_text,
                               [{from: " ", to: NBSP_UC}]);
 
@@ -735,83 +734,128 @@ function render_link(ps, link_text)
     if(!t) {
         let a = new_element_with_text("a",
                                       {"class": "ag",
-                                       "style": "width: " + link_text_len + "em;"},
+                                       "style": "width: " + link_text.length + "em;"},
                                       " " + link_text + " ");
         return [a];
     }
     let command = t.token.toLowerCase();
 
     if(command === "link") {
-        t = get_next_token(ps, false);
-        if(!t) {
-            return null;
-        }
-        let name = t.token;
-        let line = "";
-
-        t = get_next_token(ps, false);
-        if(t) {
-            line = t.token;
-        }
-
-        name = str_strip_quote(name);
-
-        let m = name.match(/(.*)\/([^/]+)/);
-        let link = "javascript:void(0);";
-        if(m) {
-            let file = m[1];
-            let node = m[2];
-            
-            link = file;
-
-            let sp = new URLSearchParams(get_guide_url().search);
-            let cur_parent_ref = sp.get("parent_ref");
-            if(cur_parent_ref) {
-                cur_parent_ref = decodeURI(cur_parent_ref)
-                link = cur_parent_ref + "/" + link;
-            }
-
-            let file_split = file.split("/");
-            if(cur_parent_ref) {
-                link += "?parent_ref=" + encodeURI(cur_parent_ref);
-            } else if(file_split.length > 1) {
-                let dirs_split = file_split.slice(0, -1);
-                let parent_split = dirs_split.map(() => { return ".." });
-                let next_parent_ref = parent_split.join("/");
-                if(next_parent_ref.length > 0) {
-                    link += "?parent_ref=" + encodeURI(next_parent_ref);
-                }
-            }
-            link += "#" + node;
-        } else {
-            link = "#" + encodeURI(name);
-        }
-
-        let a = new_element_with_text("a",
-                                      {"class": "ag",
-                                       "href": link,
-                                       "style": "width: " + link_text_len + "em;"},
-                                      " " + link_text + " ");
-        a.onclick = handle_click_link;
-        const elems = [a];
-
-        // Add tooltip if the link can't open naturally
-        if(browser_is_firefox() && link.startsWith("file:///")) {
-            a.classList.add("has-help");
-
-            let div = new_element_with_text("div", {"class": "help fasthelp"},
-                                            "Direct links to other local files are blocked in Firefox.  To open this link, right click, open in new tab, select the URL bar and press return.");
-            elems.push(div);
-        }
-
-        return elems;
+        return render_link_internal(ps, link_text)
+    } else if(command === "system") {
+        return render_link_system(ps, link_text)
     }
     
     let a = new_element_with_text("a",
                                   {"class": "ag",
-                                   "style": "width: " + link_text_len + "em;"},
+                                   "style": "width: " + link_text.length + "em;"},
                                   " " + link_text + " ");
     return [a];
+}
+
+function render_link_internal(ps, link_text)
+{
+    let t = get_next_token(ps, false);
+    if(!t) {
+        return null;
+    }
+    let name = t.token;
+    let line = "";
+
+    t = get_next_token(ps, false);
+    if(t) {
+        line = t.token;
+    }
+
+    name = str_strip_quote(name);
+
+    let m = name.match(/(.*)\/([^/]+)/);
+    let link = "javascript:void(0);";
+    if(m) {
+        let file = m[1];
+        let node = m[2];
+        
+        link = file;
+
+        let sp = new URLSearchParams(get_guide_url().search);
+        let cur_parent_ref = sp.get("parent_ref");
+        if(cur_parent_ref) {
+            cur_parent_ref = decodeURI(cur_parent_ref)
+            link = cur_parent_ref + "/" + link;
+        }
+
+        let file_split = file.split("/");
+        if(cur_parent_ref) {
+            link += "?parent_ref=" + encodeURI(cur_parent_ref);
+        } else if(file_split.length > 1) {
+            let dirs_split = file_split.slice(0, -1);
+            let parent_split = dirs_split.map(() => { return ".." });
+            let next_parent_ref = parent_split.join("/");
+            if(next_parent_ref.length > 0) {
+                link += "?parent_ref=" + encodeURI(next_parent_ref);
+            }
+        }
+        link += "#" + node;
+    } else {
+        link = "#" + encodeURI(name);
+    }
+
+    let a = new_element_with_text("a",
+                                  {"class": "ag",
+                                   "href": link,
+                                   "style": "width: " + link_text.length + "em;"},
+                                  " " + link_text + " ");
+    a.onclick = handle_click_link;
+    const elems = [a];
+
+    // Add tooltip if the link can't open naturally
+    if(browser_is_firefox() && link.startsWith("file:///")) {
+        a.classList.add("has-help");
+
+        let div = new_element_with_text("div", {"class": "help fasthelp"},
+                                        "Direct links to other local files are blocked in Firefox.  To open this link, right click, open in new tab, select the URL bar and press return.");
+        elems.push(div);
+    }
+
+    return elems;
+}
+
+function render_link_system(ps, link_text)
+{
+    let t = get_next_token(ps, false);
+    if(!t) {
+        return null;
+    }
+
+    let cmd = t.token;
+    if(cmd == "" ||
+       (cmd = str_strip_quote(cmd)) == "") {
+        return null;
+    }
+                 
+    let ps2 = new_tbuf(cmd);
+    let t2 = get_next_token(ps2, false);
+    let link = "";
+
+    let ados_cmd = t2.token.toLowerCase();
+    if(ados_cmd == "openurl") {
+        link = get_next_token(ps2, false).token;
+        let m = link.match(/^https?:\/\/|ftp:\/\//i)
+        if(!m) {
+            link = "http://" + link;
+        }
+    }
+
+    let a = new_element_with_text("a",
+                                  {"class": "ag",
+                                   "href": link,
+                                   "target": "_blank",
+                                   "style": "width: " + link_text.length + "em;"},
+                                  " " + link_text + " ");
+    // a.onclick = handle_click_link;
+    const elems = [a];
+
+    return elems;
 }
 
 function browser_is_firefox()
