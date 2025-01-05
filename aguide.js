@@ -1,5 +1,5 @@
 /*
-  Copyright 2023-2024 Robert Kidd
+  Copyright 2023-2025 Robert Kidd
 
   This file is part of AGuide Viewer.
 
@@ -20,6 +20,8 @@
 
 const NBSP_UC = "\u00A0";
 
+var theme = "os3";
+
 if(typeof browser === "undefined") {
     var browser = chrome;
 }
@@ -28,8 +30,11 @@ function main()
 {
     browser.runtime.onMessage.addListener(handle_message);
 
-    init_page(true);
+    init_page(true).then(continue_main);
+}
 
+function continue_main()
+{
     let params = new URLSearchParams(window.location.search);
     let guideEnc = params.get("guide");
     let storage_name_enc = params.get("storage");
@@ -74,15 +79,19 @@ function get_guide_url()
 
 function init_page(show_open)
 {
+    return browser.runtime.sendMessage({method: "loadPrefs"})
+        .then(set_config)
+        .then((prefs) => continue_init_page(show_open, prefs));
+}
+
+function continue_init_page(show_open, prefs)
+{
     let b = document.getElementsByTagName("body");
     let body = null;
 
-    if(b.length > 1) {
-        body = b[0];
-    } else {
-        body = document.createElement("body");
-        document.body = body;
-    }
+    body = document.createElement("body");
+    body.classList.add(theme);
+    document.body = body;
     
     let body_div = document.createElement("div");
     body_div.appendChild(make_toolbar(show_open));
@@ -92,6 +101,20 @@ function init_page(show_open)
 
     addEventListener("popstate", handle_popstate);
     addEventListener("hashchange", display_node_hash);
+
+    return new Promise(resolve => resolve());
+}
+
+function set_config(prefs)
+{
+    theme = prefs.theme ? prefs.theme : "os3";
+
+    let b = document.getElementsByTagName("body");
+    if(b.length > 0) {
+        b[0].className = theme;
+    }
+
+    return new Promise(resolve => resolve(prefs));
 }
 
 function handle_message(request, sender, sendResponse)
@@ -99,6 +122,8 @@ function handle_message(request, sender, sendResponse)
     if(request.method === "removePrefsWindow") {
         close_preferences();
         sendResponse({});
+    } else if(request.method === "savePrefs") {
+        set_config(request.prefs);
     }
 }
 
@@ -702,7 +727,6 @@ function apply_justification(render_state, jdiv)
 function render_link(ps, link_text)
 {
     link_text = str_strip_quote(link_text);
-    let link_text_len = link_text.length;
     link_text = str_translate(link_text,
                               [{from: " ", to: NBSP_UC}]);
 
@@ -710,83 +734,128 @@ function render_link(ps, link_text)
     if(!t) {
         let a = new_element_with_text("a",
                                       {"class": "ag",
-                                       "style": "width: " + link_text_len + "em;"},
+                                       "style": "width: " + link_text.length + "em;"},
                                       " " + link_text + " ");
         return [a];
     }
     let command = t.token.toLowerCase();
 
     if(command === "link") {
-        t = get_next_token(ps, false);
-        if(!t) {
-            return null;
-        }
-        let name = t.token;
-        let line = "";
-
-        t = get_next_token(ps, false);
-        if(t) {
-            line = t.token;
-        }
-
-        name = str_strip_quote(name);
-
-        let m = name.match(/(.*)\/([^/]+)/);
-        let link = "javascript:void(0);";
-        if(m) {
-            let file = m[1];
-            let node = m[2];
-            
-            link = file;
-
-            let sp = new URLSearchParams(get_guide_url().search);
-            let cur_parent_ref = sp.get("parent_ref");
-            if(cur_parent_ref) {
-                cur_parent_ref = decodeURI(cur_parent_ref)
-                link = cur_parent_ref + "/" + link;
-            }
-
-            let file_split = file.split("/");
-            if(cur_parent_ref) {
-                link += "?parent_ref=" + encodeURI(cur_parent_ref);
-            } else if(file_split.length > 1) {
-                let dirs_split = file_split.slice(0, -1);
-                let parent_split = dirs_split.map(() => { return ".." });
-                let next_parent_ref = parent_split.join("/");
-                if(next_parent_ref.length > 0) {
-                    link += "?parent_ref=" + encodeURI(next_parent_ref);
-                }
-            }
-            link += "#" + node;
-        } else {
-            link = "#" + encodeURI(name);
-        }
-
-        let a = new_element_with_text("a",
-                                      {"class": "ag",
-                                       "href": link,
-                                       "style": "width: " + link_text_len + "em;"},
-                                      " " + link_text + " ");
-        a.onclick = handle_click_link;
-        const elems = [a];
-
-        // Add tooltip if the link can't open naturally
-        if(browser_is_firefox() && link.startsWith("file:///")) {
-            a.classList.add("has-help");
-
-            let div = new_element_with_text("div", {"class": "help fasthelp"},
-                                            "Direct links to other local files are blocked in Firefox.  To open this link, right click, open in new tab, select the URL bar and press return.");
-            elems.push(div);
-        }
-
-        return elems;
+        return render_link_internal(ps, link_text)
+    } else if(command === "system") {
+        return render_link_system(ps, link_text)
     }
     
     let a = new_element_with_text("a",
                                   {"class": "ag",
-                                   "style": "width: " + link_text_len + "em;"},
+                                   "style": "width: " + link_text.length + "em;"},
                                   " " + link_text + " ");
     return [a];
+}
+
+function render_link_internal(ps, link_text)
+{
+    let t = get_next_token(ps, false);
+    if(!t) {
+        return null;
+    }
+    let name = t.token;
+    let line = "";
+
+    t = get_next_token(ps, false);
+    if(t) {
+        line = t.token;
+    }
+
+    name = str_strip_quote(name);
+
+    let m = name.match(/(.*)\/([^/]+)/);
+    let link = "javascript:void(0);";
+    if(m) {
+        let file = m[1];
+        let node = m[2];
+        
+        link = file;
+
+        let sp = new URLSearchParams(get_guide_url().search);
+        let cur_parent_ref = sp.get("parent_ref");
+        if(cur_parent_ref) {
+            cur_parent_ref = decodeURI(cur_parent_ref)
+            link = cur_parent_ref + "/" + link;
+        }
+
+        let file_split = file.split("/");
+        if(cur_parent_ref) {
+            link += "?parent_ref=" + encodeURI(cur_parent_ref);
+        } else if(file_split.length > 1) {
+            let dirs_split = file_split.slice(0, -1);
+            let parent_split = dirs_split.map(() => { return ".." });
+            let next_parent_ref = parent_split.join("/");
+            if(next_parent_ref.length > 0) {
+                link += "?parent_ref=" + encodeURI(next_parent_ref);
+            }
+        }
+        link += "#" + node;
+    } else {
+        link = "#" + encodeURI(name);
+    }
+
+    let a = new_element_with_text("a",
+                                  {"class": "ag",
+                                   "href": link,
+                                   "style": "width: " + link_text.length + "em;"},
+                                  " " + link_text + " ");
+    a.onclick = handle_click_link;
+    const elems = [a];
+
+    // Add tooltip if the link can't open naturally
+    if(browser_is_firefox() && link.startsWith("file:///")) {
+        a.classList.add("has-help");
+
+        let div = new_element_with_text("div", {"class": "help fasthelp"},
+                                        "Direct links to other local files are blocked in Firefox.  To open this link, right click, open in new tab, select the URL bar and press return.");
+        elems.push(div);
+    }
+
+    return elems;
+}
+
+function render_link_system(ps, link_text)
+{
+    let t = get_next_token(ps, false);
+    if(!t) {
+        return null;
+    }
+
+    let cmd = t.token;
+    if(cmd == "" ||
+       (cmd = str_strip_quote(cmd)) == "") {
+        return null;
+    }
+                 
+    let ps2 = new_tbuf(cmd);
+    let t2 = get_next_token(ps2, false);
+    let link = "";
+
+    let ados_cmd = t2.token.toLowerCase();
+    if(ados_cmd == "openurl") {
+        link = get_next_token(ps2, false).token;
+        let m = link.match(/^https?:\/\/|ftp:\/\//i)
+        if(!m) {
+            link = "http://" + link;
+        }
+    }
+
+    let a = new_element_with_text("a",
+                                  {"class": "ag",
+                                   "href": link,
+                                   "target": "_blank",
+                                   "style": "width: " + link_text.length + "em;"},
+                                  " " + link_text + " ");
+    // a.onclick = handle_click_link;
+    const elems = [a];
+
+    return elems;
 }
 
 function browser_is_firefox()

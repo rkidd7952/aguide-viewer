@@ -31,7 +31,13 @@ function main()
         close_window();
     });
 
-    browser.runtime.sendMessage({method: "loadPrefs"}).then(set_config);
+    browser.runtime.sendMessage({method: "loadPrefs"})
+        .then(set_config)
+        .then((prefs) => continue_main());
+}
+
+function continue_main()
+{
     browser.runtime.onMessage.addListener(handle_message);
 
     document.addEventListener("keyup", catch_escape);
@@ -64,13 +70,26 @@ function catch_escape(event)
 
 function set_config(prefs)
 {
+    let b = document.getElementsByTagName("body");
+    if(b.length > 0) {
+        b[0].className = prefs.theme;
+    }
+
+    document.getElementById("theme_os3").checked = prefs.theme == "os3";
+    document.getElementById("theme_native").checked = prefs.theme == "native";
     document.getElementById("file-ext").checked = prefs.detect_ext;
     document.getElementById("file-sig").checked = prefs.detect_sig;
 }
 
 function save_config()
 {
+    let theme = "os3";
+    if(document.getElementById("theme_native").checked) {
+        theme = "native";
+    }
+
     let prefs = {
+        theme: theme,
         detect_ext: document.getElementById("file-ext").checked,
         detect_sig: document.getElementById("file-sig").checked
     };

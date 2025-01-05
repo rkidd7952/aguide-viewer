@@ -1,3 +1,8 @@
+v0.6 2025-Jan-4
+ - Add a configurable theme - either OS 3 or native browser
+ - Support `system` type links that call openurl.  These open the linked
+   URL in a new tab/window.
+
 v0.5 2024-Apr-24
  - Upgrade signature for FF 127
 

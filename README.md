@@ -18,10 +18,10 @@ AGuide Viewer is an open source reader for AmigaGuide documents implemented as a
 # Installation
 
 Firefox:
- - Download the release build [aguide-0.3.xpi](https://sourceforge.net/projects/aguide-viewer/files/v0.3/aguide-0.3.xpi/download)
+ - Download the release build [aguide-0.6.xpi](https://sourceforge.net/projects/aguide-viewer/files/v0.6/aguide-0.6.xpi/download)
  - Tools > Add-ons
  - (Gear icon) > Install Add-on From File...
- - Choose aguide-0.3.xpi
+ - Choose aguide-0.6.xpi
 
 Firefox (development build):
  - Browse to about:debugging#/runtime/this-firefox
