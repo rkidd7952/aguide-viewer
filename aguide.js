@@ -444,6 +444,9 @@ function find_toc(aguide, node)
 function find_node_next(aguide, name)
 {
     let idx = find_node_index(aguide, name);
+    if(idx === -1) {
+        return null;
+    }
     let node = aguide.nodes[idx];
     if(node.next) {
         return find_node(aguide, node.next);
@@ -456,6 +459,9 @@ function find_node_next(aguide, name)
 function find_node_prev(aguide, name)
 {
     let idx = find_node_index(aguide, name);
+    if(idx === -1) {
+        return null;
+    }
     let node = aguide.nodes[idx];
     if(node.prev) {
         return find_node(aguide, node.prev);
@@ -475,6 +481,8 @@ function display_node_hash()
     }
 }
 
+// Configures `button` to link to `node`.  If `node` is null, disables
+// the button.
 function set_button_link(button, node)
 {
     if(!node) {
@@ -506,7 +514,7 @@ function display_node(name)
     let html = render_html(AG, n);
 
     let toc = find_toc(AG, n);
-    document.getElementById("button-contents").disabled = (name === toc.name);
+    document.getElementById("button-contents").disabled = (toc !== null && name === toc.name);
 
     set_button_link(document.getElementById("button-browse-next"),
                     find_node_next(AG, name));
