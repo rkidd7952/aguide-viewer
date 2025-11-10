@@ -39,5 +39,12 @@
       "64": "icon64x64.png",
       "96": "icon96x96.png"
     }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
   }
 }
