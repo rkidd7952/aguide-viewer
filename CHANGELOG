@@ -1,6 +1,7 @@
 v0.8 2025-Nov-9
  - Add data_collection_permissions to manifest.json.  This extension
    neither collects nor transmits data.
+ - Add extension ID to the manifest.
 
 v0.7 2025-Oct-8
  - Fix bug where rendering fails if a @toc (table of contents) tag
