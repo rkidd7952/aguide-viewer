@@ -1,5 +1,5 @@
 /*
-  Copyright 2023-2025 Robert Kidd
+  Copyright 2023-2026 Robert Kidd
 
   This file is part of AGuide Viewer.
 
@@ -647,9 +647,7 @@ function render_brace_cmd(aguide, cmd, render_state)
         }
         let cls = apply_style(render_state, tlc);
         if(cls) {
-            let new_span = new_element("span", {"class": cls});
-            cur_crsr(render_state.crsr_stack).appendChild(new_span);
-            render_state.crsr_stack.push(new_span);
+            push_span_of_class(cls, render_state);
         }
         return;
     } else if(tlc === "ub" || tlc === "ui" || tlc === "uu") {
@@ -658,9 +656,7 @@ function render_brace_cmd(aguide, cmd, render_state)
         }
         let cls = remove_style(render_state, tlc);
         if(cls) {
-            let new_span = new_element("span", {"class": cls});
-            cur_crsr(render_state.crsr_stack).appendChild(new_span);
-            render_state.crsr_stack.push(new_span);
+            push_span_of_class(cls, render_state);
         }
         return;
     } else if(tlc === "fg" || tlc === "bg") {
@@ -671,9 +667,19 @@ function render_brace_cmd(aguide, cmd, render_state)
             }
             let cls = apply_color(render_state, tlc, color);
             if(cls) {
-                let new_span = new_element("span", {"class": cls});
-                cur_crsr(render_state.crsr_stack).appendChild(new_span);
-                render_state.crsr_stack.push(new_span);
+                push_span_of_class(cls, render_state);
+            }
+            return;
+        }
+    } else if(tlc === "apen" || tlc === "bpen") {
+        let pen = get_next_token(ps, false);
+        if(pen) {
+            if(render_state.style.length > 0) {
+                render_state.crsr_stack.pop();
+            }
+            let cls = apply_pen(render_state, tlc, pen);
+            if(cls) {
+                push_span_of_class(cls, render_state);
             }
             return;
         }
@@ -708,6 +714,13 @@ function render_brace_cmd(aguide, cmd, render_state)
 
     add_text(cur_crsr(render_state.crsr_stack), orig);
     return;
+}
+
+function push_span_of_class(cls, render_state)
+{
+    let new_span = new_element("span", {"class": cls});
+    cur_crsr(render_state.crsr_stack).appendChild(new_span);
+    render_state.crsr_stack.push(new_span);
 }
 
 function apply_justification(render_state, jdiv)
@@ -904,6 +917,20 @@ function apply_color(render_state, cmd, color)
     return render_state.style.join(" ");
 }
 
+function apply_pen(render_state, cmd, color)
+{
+    let fgOrBg = (cmd === "apen" ? "fg" : "bg");
+
+    render_state.style = render_state.style.filter((x) => {
+        return x.indexOf(fgOrBg) !== 0;
+    });
+    
+    render_state.style.push(fgOrBg + "_pen_" + color.token);
+    render_state.style.sort();
+
+    return render_state.style.join(" ");
+}
+
 function new_node_tbuf(aguide, node)
 {
     return new_tbuf(aguide.text.slice(node.start, node.end));
@@ -979,7 +1006,7 @@ function toggle_about()
     about_div.appendChild(new_element_with_text("p", {"class": "center"},
                                                 "Version " + browser.runtime.getManifest().version));
     about_div.appendChild(new_element_with_text("p", {"class": "center"},
-                                                "Copyright 2023-2024 Robert Kidd"));
+                                                "Copyright 2023-2026 Robert Kidd"));
     let p = new_element("p", {"class": "center"});
     p.appendChild(
         new_element_with_text("a",
