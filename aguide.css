@@ -1,5 +1,5 @@
 /*
-  Copyright 2023-2025 Robert Kidd
+  Copyright 2023-2026 Robert Kidd
 
   This file is part of AGuide Viewer.
 
@@ -20,36 +20,46 @@
 
 body.os3 {
     font-family: monospace;
-    --aguide-text-color: #000000;
-    --aguide-background-color: #aaaaaa;
-    --aguide-fill-color: #6688bb;
-    --aguide-highlight-color: #ffffff;
-    --aguide-shine-color: #ffffff;
-    --aguide-shadow-color: #000000;
+    --aguide-pen-0: #aaaaaa;
+    --aguide-pen-1: #000000;
+    --aguide-pen-2: #ffffff;
+    --aguide-pen-3: #6688bb;
+
+    --aguide-text-color: var(--aguide-pen-1);
+    --aguide-background-color: var(--aguide-pen-0);
+    --aguide-fill-color: var(--aguide-pen-3);
+    --aguide-highlight-color: var(--aguide-pen-2);
+    --aguide-shine-color: var(--aguide-pen-2);
+    --aguide-shadow-color: var(--aguide-pen-1);
 
     --aguide-link-border-top-left: 2px solid var(--aguide-shine-color);
     --aguide-link-border-bottom-right: 2px solid var(--aguide-shadow-color);
     --aguide-link-border-top-left-active: 2px solid var(--aguide-shadow-color);
     --aguide-link-border-bottom-right-active: 2px solid var(--aguide-shine-color);
-    --aguide-link-text-color: #000000;
+    --aguide-link-text-color: var(--aguide-text-color);
     --aguide-link-text-decoration: none;
 
     --aguide-button-border-top-left: 2px solid var(--aguide-shine-color);
     --aguide-button-border-bottom-right: 2px solid var(--aguide-shadow-color);
     --aguide-button-border-top-left-active: 2px solid var(--aguide-shadow-color);
     --aguide-button-border-bottom-right-active: 2px solid var(--aguide-shine-color);
-    --aguide-button-text-color: #000000;
+    --aguide-button-text-color: var(--aguide-text-color);
     --aguide-button-text-decoration: none;
 }
 
 body.native {
     font-family: monospace;
-    --aguide-text-color: revert;
-    --aguide-background-color: white;
-    --aguide-fill-color: #dddddd;
-    --aguide-highlight-color: revert;
-    --aguide-shine-color: revert;
-    --aguide-shadow-color: revert;
+    --aguide-pen-0: white;
+    --aguide-pen-1: revert;
+    --aguide-pen-2: revert;
+    --aguide-pen-3: #dddddd;
+
+    --aguide-text-color: var(--aguide-pen-1);
+    --aguide-background-color: var(--aguide-pen-0);
+    --aguide-fill-color: var(--aguide-pen-3);
+    --aguide-highlight-color: var(--aguide-pen-2);
+    --aguide-shine-color: var(--aguide-pen-2);
+    --aguide-shadow-color: var(--aguide-pen-1);
 
     --aguide-link-border-top-left: revert;
     --aguide-link-border-bottom-right: revert;
@@ -58,10 +68,10 @@ body.native {
     --aguide-link-text-color: revert;
     --aguide-link-text-decoration: revert;
 
-    --aguide-button-border-top-left: 1px solid var(--aguide-text-color, );
-    --aguide-button-border-bottom-right: 1px solid var(--aguide-text-color, );
-    --aguide-button-border-top-left-active: 1px solid var(--aguide-text-color, );
-    --aguide-button-border-bottom-right-active: 1px solid var(--aguide-text-color, );
+    --aguide-button-border-top-left: 1px solid var(--aguide-text-color);
+    --aguide-button-border-bottom-right: 1px solid var(--aguide-text-color);
+    --aguide-button-border-top-left-active: 1px solid var(--aguide-text-color);
+    --aguide-button-border-bottom-right-active: 1px solid var(--aguide-text-color);
     --aguide-button-text-color: revert;
     --aguide-button-text-decoration: revert;
 }
@@ -172,6 +182,22 @@ a.ag:active {
 
 .u {
     text-decoration-line: underline;
+}
+
+.fg_pen_0 {
+    color: var(--aguide-pen-0);
+}
+
+.fg_pen_1 {
+    color: var(--aguide-pen-1);
+}
+
+.fg_pen_2 {
+    color: var(--aguide-pen-2);
+}
+
+.fg_pen_3 {
+    color: var(--aguide-pen-3);
 }
 
 .fg_text {
