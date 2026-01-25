@@ -1,3 +1,6 @@
+v0.10 2026-??
+ - Add translations for da, de, es, fr, it
+
 v0.9 2026-Jan-23
  - Add support for the APEN and BPEN tags to set text/background color
    to a palette index.

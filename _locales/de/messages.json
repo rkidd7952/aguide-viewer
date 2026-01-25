@@ -1,0 +1,38 @@
+{
+    "OpenFileButtonLabel": {
+        "message": "Datei öffnen...",
+        "description": "label for OpenFile button"
+    },
+    "ContentsButtonLabel": {
+        "message": "Inhalt",
+        "description": "label for Contents button"
+    },
+    "IndexButtonLabel": {
+        "message": "Index",
+        "description": "label for Index button"
+    },
+    "HelpButtonLabel": {
+        "message": "Hilfe",
+        "description": "label for Help button"
+    },
+    "RetraceButtonLabel": {
+        "message": "Zurückgehen",
+        "description": "label for Retrace button"
+    },
+    "BrowsePrevButtonLabel": {
+        "message": "Blättern <",
+        "description": "label for Browse < button"
+    },
+    "BrowseNextButtonLabel": {
+        "message": "Blättern >",
+        "description": "label for Browse > button"
+    },
+    "PreferencesButtonLabel": {
+        "message": "Optionen...",
+        "description": "label for Preferences button"
+    },
+    "AboutButtonLabel": {
+        "message": "Über",
+        "description": "label for About button"
+    }
+}

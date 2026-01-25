@@ -1,10 +1,11 @@
 {
   "manifest_version": 2,
-  "name": "AGuide Viewer",
+  "name": "AGuide Viewer (testing)",
   "version": "0.9",
   "author": "Robert Kidd",
   "description": "Viewer for AmigaGuide documents",
   "homepage_url": "https://aguide-viewer.sourceforge.io/",
+  "default_locale": "en",
   "background": {
     "scripts": [
       "background.js"

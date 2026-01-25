@@ -1,0 +1,38 @@
+{
+    "OpenFileButtonLabel": {
+        "message": "Carica...",
+        "description": "label for OpenFile button"
+    },
+    "ContentsButtonLabel": {
+        "message": "Contenuti",
+        "description": "label for Contents button"
+    },
+    "IndexButtonLabel": {
+        "message": "Indice",
+        "description": "label for Index button"
+    },
+    "HelpButtonLabel": {
+        "message": "Aiuto",
+        "description": "label for Help button"
+    },
+    "RetraceButtonLabel": {
+        "message": "Risali",
+        "description": "label for Retrace button"
+    },
+    "BrowsePrevButtonLabel": {
+        "message": "Scorri <",
+        "description": "label for Browse < button"
+    },
+    "BrowseNextButtonLabel": {
+        "message": "Scorri >",
+        "description": "label for Browse > button"
+    },
+    "PreferencesButtonLabel": {
+        "message": "Opzioni...",
+        "description": "label for Preferences button"
+    },
+    "AboutButtonLabel": {
+        "message": "Informazioni",
+        "description": "label for About button"
+    }
+}

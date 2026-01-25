@@ -29,7 +29,8 @@ SRCS=aguide.html \
 	aguide.css \
 	README.md \
 	README.guide \
-	COPYING
+	COPYING \
+	_locales/*/messages.json
 
 aguide.xpi: $(SRCS)
 	zip $@ $^

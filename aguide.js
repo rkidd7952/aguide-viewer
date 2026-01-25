@@ -135,37 +135,53 @@ function make_toolbar(show_open)
         open_file.addEventListener("change", read_input, false);
         toolbar_div.appendChild(open_file);
         toolbar_div.appendChild(
-            new_button("button-open", "Open File...", false,
+            new_button("button-open",
+                       browser.i18n.getMessage("OpenFileButtonLabel"), false,
                        () => {
                            document.getElementById("open-file").click();
                        }));
         toolbar_div.appendChild(document.createTextNode(" "));
     }
-    toolbar_div.appendChild(new_button("button-contents", "Contents", true,
-                                       null));
-    toolbar_div.appendChild(document.createTextNode(" "));
-    toolbar_div.appendChild(new_button("button-index", "Index", true, null));
-    toolbar_div.appendChild(document.createTextNode(" "));
-    toolbar_div.appendChild(new_button("button-help", "Help", true, null));
+    toolbar_div.appendChild(
+        new_button("button-contents",
+                   browser.i18n.getMessage("ContentsButtonLabel"), true, null));
     toolbar_div.appendChild(document.createTextNode(" "));
     toolbar_div.appendChild(
-        new_button("button-retrace", "Retrace", true, () => {
-            history.go(-1);
-        }));
-    toolbar_div.appendChild(document.createTextNode(" "));
-    toolbar_div.appendChild(new_button("button-browse-prev", "Browse <",
-                                       true, null));
-    toolbar_div.appendChild(document.createTextNode(" "));
-    toolbar_div.appendChild(new_button("button-browse-next", "Browse >",
-                                       true, null));
-    toolbar_div.appendChild(document.createTextNode(" "));
-    toolbar_div.appendChild(new_button("button-browse-next", "Preferences...",
-                                       false, () => { show_preferences(); }));
+        new_button("button-index",
+                   browser.i18n.getMessage("IndexButtonLabel"), true, null));
     toolbar_div.appendChild(document.createTextNode(" "));
     toolbar_div.appendChild(
-        new_button("button-about", "About", false, (event) => {
-            toggle_about();
-        }));
+        new_button("button-help",
+                   browser.i18n.getMessage("HelpButtonLabel"), true, null));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(
+        new_button("button-retrace",
+                   browser.i18n.getMessage("RetraceButtonLabel"), true,
+                   () => {
+                       history.go(-1);
+                   }));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(
+        new_button("button-browse-prev",
+                   browser.i18n.getMessage("BrowsePrevButtonLabel"), true,
+                   null));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(
+        new_button("button-browse-next",
+                   browser.i18n.getMessage("BrowseNextButtonLabel"), true,
+                   null));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(
+        new_button("button-browse-next",
+                   browser.i18n.getMessage("PreferencesButtonLabel"), false,
+                   () => { show_preferences(); }));
+    toolbar_div.appendChild(document.createTextNode(" "));
+    toolbar_div.appendChild(
+        new_button("button-about", browser.i18n.getMessage("AboutButtonLabel"),
+                   false,
+                   (event) => {
+                       toggle_about();
+                   }));
     return toolbar_div;
 }
 

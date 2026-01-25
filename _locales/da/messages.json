@@ -1,0 +1,38 @@
+{
+    "OpenFileButtonLabel": {
+        "message": "Åbne...",
+        "description": "label for OpenFile button"
+    },
+    "ContentsButtonLabel": {
+        "message": "Indhold",
+        "description": "label for Contents button"
+    },
+    "IndexButtonLabel": {
+        "message": "Indeks",
+        "description": "label for Index button"
+    },
+    "HelpButtonLabel": {
+        "message": "Hjælp",
+        "description": "label for Help button"
+    },
+    "RetraceButtonLabel": {
+        "message": "Forrige",
+        "description": "label for Retrace button"
+    },
+    "BrowsePrevButtonLabel": {
+        "message": "Tilbage",
+        "description": "label for Browse < button"
+    },
+    "BrowseNextButtonLabel": {
+        "message": "Frem",
+        "description": "label for Browse > button"
+    },
+    "PreferencesButtonLabel": {
+        "message": "Optioner...",
+        "description": "label for Preferences button"
+    },
+    "AboutButtonLabel": {
+        "message": "Version",
+        "description": "label for About button"
+    }
+}
