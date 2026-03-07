@@ -562,11 +562,11 @@ function render_html(aguide, node)
     let ps = new_node_tbuf(aguide, node);
 
     const cmd_handlers = [
-        { cmd: "@toc", handler: handle_toc_next_prev },
         { cmd: "@next", handler: handle_toc_next_prev },
         { cmd: "@prev", handler: handle_toc_next_prev },
-        { cmd: "@wordwrap", handler: nop_node },
-        { cmd: "@smartwrap", handler: nop_node }
+        { cmd: "@smartwrap", handler: nop_node },
+        { cmd: "@toc", handler: handle_toc_next_prev },
+        { cmd: "@wordwrap", handler: nop_node }
     ];
     
     /* Convert any space chars at the beginning of a line to non-breaking */
