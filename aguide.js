@@ -565,6 +565,7 @@ function render_html(aguide, node)
         { cmd: "@next", handler: handle_toc_next_prev },
         { cmd: "@prev", handler: handle_toc_next_prev },
         { cmd: "@smartwrap", handler: nop_node },
+        { cmd: "@title", handler: handle_node_title },
         { cmd: "@toc", handler: handle_toc_next_prev },
         { cmd: "@wordwrap", handler: nop_node }
     ];
@@ -625,6 +626,13 @@ function render_html(aguide, node)
     }
 
     return html;
+}
+
+function handle_node_title(aguide, node, cmd, ps)
+{
+    let t = get_next_token(ps, false);
+    node.title = str_strip_quote(t.token);
+    return "";
 }
 
 function handle_toc_next_prev(aguide, node, cmd, ps)
