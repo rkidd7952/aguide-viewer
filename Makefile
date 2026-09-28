@@ -23,6 +23,7 @@ SRCS=aguide.html \
 	aguide.js \
 	prefs.js \
 	scan.js \
+	utils.js \
 	background.js \
 	manifest.json \
 	icon*.png \
@@ -57,8 +58,14 @@ tag:
 	git tag $(FORCE) -m "Tagging version $(VERSION)" "v$(VERSION)"
 	@echo "*** Push tag with \`git push origin v$(VERSION)\` ***"
 
+aguide-tester-image:
+	docker build -f Dockerfile.test -t aguide-tester .
+
+test:
+	docker run -v `pwd`:`pwd` -v /etc/passwd:/etc/passwd:ro --rm --entrypoint "" aguide-tester sh -c "su -s /bin/sh $(USER) -c 'export NODE_PATH=/usr/local/lib/node_modules; cd `pwd` && npx mocha'"
+
 clean:
 	-rm -f aguide.xpi
 	-rm -f distfiles
 
-.PHONY: clean tag dist
+.PHONY: clean tag dist test

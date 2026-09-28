@@ -23,7 +23,8 @@
   "web_accessible_resources": [
     "aguide.html",
     "README.guide",
-    "prefs.html"
+    "prefs.html",
+    "utils.js"
   ],
   "icons": {
     "16": "icon16x16.png",

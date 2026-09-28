@@ -18,6 +18,9 @@
   <https://www.gnu.org/licenses/>.
 */
 
+var utils;
+import("./utils.js").then((value) => utils = value);
+
 const NBSP_UC = "\u00A0";
 
 var theme = "os3";
@@ -372,13 +375,13 @@ function finish_cmd_node(ps, token, aguide)
     if(!name) {
         return false;
     }
-    node.name = str_strip_quote(name.token.toLowerCase());
+    node.name = utils.str_strip_quote(name.token.toLowerCase());
 
     console.log("node name " + node.name);
 
     let title = tbuf_search_token(ps, /.*$/m, false);
     if(title) {
-        node.title = str_strip_quote(title.token.trim());
+        node.title = utils.str_strip_quote(title.token.trim());
     }
     node.start = title.end;
 
@@ -631,14 +634,14 @@ function render_html(aguide, node)
 function handle_node_title(aguide, node, cmd, ps)
 {
     let t = get_next_token(ps, false);
-    node.title = str_strip_quote(t.token);
+    node.title = utils.str_strip_quote(t.token);
     return "";
 }
 
 function handle_toc_next_prev(aguide, node, cmd, ps)
 {
     let t = get_next_token(ps, false);
-    let n = str_strip_quote(t.token.toLowerCase());
+    let n = utils.str_strip_quote(t.token.toLowerCase());
     if(cmd === "@toc") {
         node.toc = n;
     } else if(cmd === "@next") {
@@ -771,8 +774,8 @@ function apply_justification(render_state, jdiv)
 
 function render_link(ps, link_text)
 {
-    link_text = str_strip_quote(link_text);
-    link_text = str_translate(link_text,
+    link_text = utils.str_strip_quote(link_text);
+    link_text = utils.str_translate(link_text,
                               [{from: " ", to: NBSP_UC}]);
 
     let t = get_next_token(ps, false);
@@ -812,7 +815,7 @@ function render_link_internal(ps, link_text)
         line = t.token;
     }
 
-    name = str_strip_quote(name);
+    name = utils.str_strip_quote(name);
 
     let m = name.match(/(.*)\/([^/]+)/);
     let link = "javascript:void(0);";
@@ -874,7 +877,7 @@ function render_link_system(ps, link_text)
 
     let cmd = t.token;
     if(cmd == "" ||
-       (cmd = str_strip_quote(cmd)) == "") {
+       (cmd = utils.str_strip_quote(cmd)) == "") {
         return null;
     }
                  
@@ -1217,22 +1220,8 @@ function tbuf_consume_to(ps, end)
 function tbuf_translate(ps, trs)
 {
     let ps2 = tbuf_fork(ps);
-    ps2.text = str_translate(ps2.text, trs);
+    ps2.text = utils.str_translate(ps2.text, trs);
     return ps2;
-}
-
-function str_translate(s, trs)
-{
-    trs.forEach((tr) => {
-        s = s.replaceAll(tr.from, tr.to);
-    });
-    return s;
-}
-
-function str_strip_quote(s)
-{
-    return str_translate(s, [{from: /^"/g, to: ""},
-                             {from: /"$/g, to: ""}]);
 }
 
 /* text: utf-8 that was decoded as src_encoding

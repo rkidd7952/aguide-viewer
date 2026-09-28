@@ -1,0 +1,4 @@
+# docker build -f Dockerfile.test -t aguide-tester .
+FROM node:24-alpine
+
+RUN npm install -g mocha mock-browser
