@@ -24,6 +24,7 @@ SRCS=aguide.html \
 	prefs.js \
 	scan.js \
 	utils.js \
+	tokenbuffer.js \
 	background.js \
 	manifest.json \
 	icon*.png \

@@ -19,7 +19,9 @@
 */
 
 var utils;
-import("./utils.js").then((value) => utils = value);
+import("./utils.js").then((i) => utils = i);
+var tbuf;
+import("./tokenbuffer.js").then((i) => tbuf = i);
 
 const NBSP_UC = "\u00A0";
 
@@ -227,7 +229,7 @@ var AG = null;
 
 function is_aguide(text)
 {
-    return new_aguide(new_tbuf(text)) !== null;
+    return new_aguide(tbuf.new_tbuf(text)) !== null;
 }
 
 function process_input(text, filename, encoding)
@@ -237,7 +239,7 @@ function process_input(text, filename, encoding)
         text = transcoded;
     }
 
-    let ps = new_tbuf(text);
+    let ps = tbuf.new_tbuf(text);
     AG = parse_aguide(ps);
     if(AG) {
         AG.filename = filename;
@@ -300,8 +302,8 @@ function parse_aguide(ps)
     ];
 
     let e = true;
-    while(aguide && !at_eof(ps) && e === true) {
-        let token = tbuf_search_token(ps, /^@\S+/m, false);
+    while(aguide && !tbuf.at_eof(ps) && e === true) {
+        let token = tbuf.tbuf_search_token(ps, /^@\S+/m, false);
         if(!token) {
             break;
         }
@@ -322,18 +324,18 @@ function parse_aguide(ps)
  * '@database <name>' command */
 function new_aguide(ps)
 {
-    let token = get_next_token(ps, false);
+    let token = tbuf.get_next_token(ps, false);
     if(!token || token.token.toLowerCase() !== "@database") {
         return null;
     }
 
     console.info("Reading AmigaGuide: found @database");
 
-    let db_name = get_next_token(ps, true);
+    let db_name = tbuf.get_next_token(ps, true);
     let db_name_str = "";
     if(db_name && db_name.token[0] !== "@") {
         db_name_str = db_name.token;
-        tbuf_consume_token(ps, db_name);
+        tbuf.tbuf_consume_token(ps, db_name);
     }
     return {
         database: db_name_str,
@@ -350,7 +352,7 @@ function nop_global(ps, token, aguide) {
  * Return true on success, false on error */
 function finish_cmd_master(ps, token, aguide)
 {
-    let path = get_next_token(ps, false);
+    let path = tbuf.get_next_token(ps, false);
     if(!path) {
         return false;
     }
@@ -371,7 +373,7 @@ function finish_cmd_node(ps, token, aguide)
         end: -1             /* index past end of @endnode */
     };
 
-    let name = get_next_token(ps, false);
+    let name = tbuf.get_next_token(ps, false);
     if(!name) {
         return false;
     }
@@ -379,13 +381,13 @@ function finish_cmd_node(ps, token, aguide)
 
     console.log("node name " + node.name);
 
-    let title = tbuf_search_token(ps, /.*$/m, false);
+    let title = tbuf.tbuf_search_token(ps, /.*$/m, false);
     if(title) {
         node.title = utils.str_strip_quote(title.token.trim());
     }
     node.start = title.end;
 
-    token = tbuf_search_token(ps, /^@endnode/mi, false);
+    token = tbuf.tbuf_search_token(ps, /^@endnode/mi, false);
 
     if(!token) {
         return false;
@@ -394,9 +396,9 @@ function finish_cmd_node(ps, token, aguide)
     node.end = token.start;
     node.end_cmd = token.end;
 
-    let en_name = get_next_token(ps, true);
+    let en_name = tbuf.get_next_token(ps, true);
     if(en_name && en_name.token.toLowerCase()[0] != "@") {
-        tbuf_consume_token(ps, en_name);
+        tbuf.tbuf_consume_token(ps, en_name);
         let n = en_name.token.toLowerCase();
         if(n !== node.name) {
             console.error("Found @endnode with name " + n + " for @node name " + node.name);
@@ -412,7 +414,7 @@ function finish_cmd_node(ps, token, aguide)
 
 function finish_cmd_index(ps, token, aguide)
 {
-    let index = get_next_token(ps, false);
+    let index = tbuf.get_next_token(ps, false);
     if(!index) {
         return false;
     }
@@ -424,7 +426,7 @@ function finish_cmd_index(ps, token, aguide)
 function finish_cmd_remark(ps, token, aguide)
 {
     /* eat everything to end of line */
-    let eol = tbuf_search_token(ps, /$/m, false);
+    let eol = tbuf.tbuf_search_token(ps, /$/m, false);
     if(eol) {
         console.info("  remark: " + ps.text.slice(token.start, eol.end));
     }
@@ -574,7 +576,7 @@ function render_html(aguide, node)
     ];
     
     /* Convert any space chars at the beginning of a line to non-breaking */
-    let ps2 = tbuf_translate(ps,
+    let ps2 = tbuf.tbuf_translate(ps,
                              [{from: /(\n)( +)/gm,
                                to: (match, p1, p2, offset, string) => {
                                let r = p1;
@@ -589,33 +591,33 @@ function render_html(aguide, node)
         crsr_stack: [html, jdiv]
     };
 
-    while(!at_eof(ps2)) {
+    while(!tbuf.at_eof(ps2)) {
         console.info("pos: " + ps2.pos);
 
-        let c = tbuf_search_token(ps2, /[\\@\n]/, true);
+        let c = tbuf.tbuf_search_token(ps2, /[\\@\n]/, true);
         if(!c) {
-            add_text(crsr, tbuf_slice(ps2, ps2.pos, -1, false));
+            add_text(crsr, tbuf.tbuf_slice(ps2, ps2.pos, -1, false));
             break;
         }
 
-        add_text(crsr, tbuf_slice(ps2, 0, c.start - ps2.pos, false));
+        add_text(crsr, tbuf.tbuf_slice(ps2, 0, c.start - ps2.pos, false));
 
         if(c.token === "\\") { /* escape */
             /* Skip backslash, emit next char */
-            add_text(crsr, tbuf_slice(ps2, 1, 2, false));
+            add_text(crsr, tbuf.tbuf_slice(ps2, 1, 2, false));
         } else if(c.token === "\n") {
-            tbuf_consume_token(ps2, c);
+            tbuf.tbuf_consume_token(ps2, c);
             crsr.appendChild(new_element("br", {}));
         } else if(c.token === "@") { /* start cmd */
-            let brace = tbuf_search_token(ps2, /^@{[^}]*}/, true);
+            let brace = tbuf.tbuf_search_token(ps2, /^@{[^}]*}/, true);
             if(brace) {
-                tbuf_consume_token(ps2, brace);
+                tbuf.tbuf_consume_token(ps2, brace);
                 let cmd = brace.token.slice(2, -1);
                 console.log("handle @{" + cmd + "}");
                 render_brace_cmd(aguide, cmd, render_state);
                 crsr = cur_crsr(render_state.crsr_stack);
             } else {
-                let t = get_next_token(ps2, false);
+                let t = tbuf.get_next_token(ps2, false);
                 let cmd = t.token.toLowerCase();
                 let cmd_handler = get_handler(cmd_handlers, cmd);
                 console.log("handle cmd " + cmd);
@@ -633,14 +635,14 @@ function render_html(aguide, node)
 
 function handle_node_title(aguide, node, cmd, ps)
 {
-    let t = get_next_token(ps, false);
+    let t = tbuf.get_next_token(ps, false);
     node.title = utils.str_strip_quote(t.token);
     return "";
 }
 
 function handle_toc_next_prev(aguide, node, cmd, ps)
 {
-    let t = get_next_token(ps, false);
+    let t = tbuf.get_next_token(ps, false);
     let n = utils.str_strip_quote(t.token.toLowerCase());
     if(cmd === "@toc") {
         node.toc = n;
@@ -660,8 +662,8 @@ function nop_node(aguide, node, cmd, ps)
 function render_brace_cmd(aguide, cmd, render_state)
 {
     const orig = "@{" + cmd + "}";
-    let ps = new_tbuf(cmd);
-    let t = get_next_token(ps, false);
+    let ps = tbuf.new_tbuf(cmd);
+    let t = tbuf.get_next_token(ps, false);
     if(!t) {
         add_text(cur_crsr(render_state.crsr_stack), orig);
         return;
@@ -687,7 +689,7 @@ function render_brace_cmd(aguide, cmd, render_state)
         }
         return;
     } else if(tlc === "fg" || tlc === "bg") {
-        let color = get_next_token(ps, false);
+        let color = tbuf.get_next_token(ps, false);
         if(color) {
             if(render_state.style.length > 0) {
                 render_state.crsr_stack.pop();
@@ -699,7 +701,7 @@ function render_brace_cmd(aguide, cmd, render_state)
             return;
         }
     } else if(tlc === "apen" || tlc === "bpen") {
-        let pen = get_next_token(ps, false);
+        let pen = tbuf.get_next_token(ps, false);
         if(pen) {
             if(render_state.style.length > 0) {
                 render_state.crsr_stack.pop();
@@ -715,7 +717,7 @@ function render_brace_cmd(aguide, cmd, render_state)
         apply_justification(render_state, jdiv);
         return;
     } else if(tlc === "lindent") {
-        let indent = get_next_token(ps, false);
+        let indent = tbuf.get_next_token(ps, false);
         if(indent) {
             /* find jdiv, clone, add indent padding */
             for(let i = render_state.crsr_stack.length - 1; i > 0; --i) {
@@ -778,7 +780,7 @@ function render_link(ps, link_text)
     link_text = utils.str_translate(link_text,
                               [{from: " ", to: NBSP_UC}]);
 
-    let t = get_next_token(ps, false);
+    let t = tbuf.get_next_token(ps, false);
     if(!t) {
         let a = new_element_with_text("a",
                                       {"class": "ag",
@@ -803,14 +805,14 @@ function render_link(ps, link_text)
 
 function render_link_internal(ps, link_text)
 {
-    let t = get_next_token(ps, false);
+    let t = tbuf.get_next_token(ps, false);
     if(!t) {
         return null;
     }
     let name = t.token;
     let line = "";
 
-    t = get_next_token(ps, false);
+    t = tbuf.get_next_token(ps, false);
     if(t) {
         line = t.token;
     }
@@ -870,7 +872,7 @@ function render_link_internal(ps, link_text)
 
 function render_link_system(ps, link_text)
 {
-    let t = get_next_token(ps, false);
+    let t = tbuf.get_next_token(ps, false);
     if(!t) {
         return null;
     }
@@ -881,13 +883,13 @@ function render_link_system(ps, link_text)
         return null;
     }
                  
-    let ps2 = new_tbuf(cmd);
-    let t2 = get_next_token(ps2, false);
+    let ps2 = tbuf.new_tbuf(cmd);
+    let t2 = tbuf.get_next_token(ps2, false);
     let link = "";
 
     let ados_cmd = t2.token.toLowerCase();
     if(ados_cmd == "openurl") {
-        link = get_next_token(ps2, false).token;
+        link = tbuf.get_next_token(ps2, false).token;
         let m = link.match(/^https?:\/\/|ftp:\/\//i)
         if(!m) {
             link = "http://" + link;
@@ -960,7 +962,7 @@ function apply_pen(render_state, cmd, color)
 
 function new_node_tbuf(aguide, node)
 {
-    return new_tbuf(aguide.text.slice(node.start, node.end));
+    return tbuf.new_tbuf(aguide.text.slice(node.start, node.end));
 }
 
 function new_element(typ, attrs)
@@ -1098,131 +1100,6 @@ function catch_escape(event)
     }
 }
 
-/******* token buf functions *******/
-function new_tbuf(text)
-{
-    return { text: text, pos: 0 }
-}
-
-function tbuf_fork(ps)
-{
-    return new_tbuf(ps.text.slice(ps.pos))
-}
-
-function at_eof(ps)
-{
-    return ps.pos >= ps.text.length
-}
-
-/* peek: if true, don't update parse state */
-function get_next_token(ps, peek)
-{
-    let pos = ps.pos;
-
-    /* skip to first not-whitespace */
-    let next_ws = ps.text.slice(pos).search(/\S/);
-    if(next_ws === -1) {
-        return null;
-    }
-
-    pos += next_ws;
-
-    let begins_line = false;
-    if(pos > 0 && ps.text[pos - 1] == '\n') {
-        begins_line = true;
-    }
-
-    let next_re = /\s/;
-    let quoted = 0;
-    /* If current char is double quote, token is all text up to matching
-     * quote. */
-    if(ps.text[pos] === '"') {
-        next_re = /"/;
-        quoted = 1;
-    }
-
-    let next = ps.text.slice(pos + quoted).search(next_re);
-    if(next === -1) {
-        /* token is all text to end */
-        let token = ps.text.slice(pos);
-        let end = pos + token.length;
-        if(peek === false) {
-            tbuf_consume_to(ps, end);
-        }
-        return new_token(token, pos, end, begins_line);
-    }
-
-    next += quoted * 2;
-    let token = ps.text.slice(pos, pos + next);
-    let end = pos + next;
-    if(peek === false) {
-        tbuf_consume_to(ps, end);
-    }
-    return new_token(token, pos, end, begins_line);
-}
-
-function new_token(token, start, end, begins_line)
-{
-    return { token: token, start: start, end: end, begins_line: begins_line };
-}
-
-function tbuf_slice(ps, start, end, peek)
-{
-    if(end !== -1) {
-        let t = ps.text.slice(ps.pos + start, ps.pos + end);
-        if(peek === false) {
-            tbuf_consume_to(ps, ps.pos + end);
-        }
-        return t;
-    }
-    let t = ps.text.slice(ps.pos);
-    if(peek === false) {
-        tbuf_consume_to(ps, ps.pos + t.length);
-    }
-    return t;
-}
-
-function tbuf_search_token(ps, re, peek)
-{
-    let pos = ps.pos;
-    let start = ps.text.slice(pos).search(re);
-    if(start === -1) {
-        return null;
-    }
-
-    let token = ps.text.slice(pos).match(re);
-    if(token.length <= 0) {
-        return null;
-    }
-    let end = pos + start + token[0].length;
-
-    if(peek === false) {
-        tbuf_consume_to(ps, end);
-    }
-
-    return new_token(token[0], pos + start, end, false);
-}
-
-function tbuf_consume_token(ps, token)
-{
-    ps.pos = token.end;
-}
-
-/* end: absolute position in tbuf to consume to */
-function tbuf_consume_to(ps, end)
-{
-    ps.pos = end;
-}
-
-/* trs: array of objects {from: x, to: y}
- *      x: string or regex to replace
- *      y: replacement */
-function tbuf_translate(ps, trs)
-{
-    let ps2 = tbuf_fork(ps);
-    ps2.text = utils.str_translate(ps2.text, trs);
-    return ps2;
-}
 
 /* text: utf-8 that was decoded as src_encoding
  * returns utf-8 decoded as dst_decoding

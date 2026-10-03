@@ -24,7 +24,8 @@
     "aguide.html",
     "README.guide",
     "prefs.html",
-    "utils.js"
+    "utils.js",
+    "tokenbuffer.js",
   ],
   "icons": {
     "16": "icon16x16.png",
