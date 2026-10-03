@@ -72,6 +72,8 @@ Building the extension bundle requires the following packages.
  - make
  - zip
 
+For development, docker is required to run unit tests.
+
 To build the extension bundle
  % make
 
